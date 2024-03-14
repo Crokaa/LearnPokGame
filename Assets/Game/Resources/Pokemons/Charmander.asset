@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d8f0478f77d0142adb42e33caf4677, type: 3}
   m_Name: Charmander
   m_EditorClassIdentifier: 
-  name: Bulbasaur
+  name: Charmander
   description: 
   frontSprite: {fileID: 21300000, guid: 7215dc5e31fa49e45a2c9a668ee03a27, type: 3}
   backSprite: {fileID: 21300000, guid: e2bca9be4686d6c4595d31316f50d285, type: 3}
