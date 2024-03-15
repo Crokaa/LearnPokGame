@@ -7,8 +7,23 @@ public class HPBar : MonoBehaviour
 
     [SerializeField] GameObject health;
 
-   public void setHP (float hpNormalized){
+   public void SetHP (float hpNormalized){
 
-        health.transform.localScale = new Vector3(hpNormalized, 1);
+        health.transform.localScale = new Vector3(hpNormalized, 1f);
+   }
+
+   public IEnumerator SetHPSmooth(float newHP) {
+
+     float currHP = health.transform.localScale.x;
+     float change = currHP - newHP;
+
+     while (currHP - newHP > Mathf.Epsilon)
+     {
+          currHP -= change * Time.deltaTime;
+          health.transform.localScale = new Vector3(currHP, 1f);
+          yield return null;
+     }
+
+     health.transform.localScale = new Vector3(newHP, 1f);
    }
 }

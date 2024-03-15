@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
                 targetPos.y += input.y;
 
                 // this new vector points at the target's feet and not its center/face
-                if(isWalkable(new Vector3(targetPos.x, targetPos.y - 0.5f)))
+                if(IsWalkable(new Vector3(targetPos.x, targetPos.y - 0.5f)))
                     StartCoroutine(Move(targetPos));
             }
         }
@@ -54,10 +54,10 @@ public class PlayerController : MonoBehaviour
 
         isMoving = false;
 
-        checkForEncounters();
+        CheckForEncounters();
     }
 
-    private bool isWalkable(Vector3 targetPos) {
+    private bool IsWalkable(Vector3 targetPos) {
 
         if (Physics2D.OverlapCircle(targetPos, 0.005f, solidObjects) != null )
             return false;
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
         return true;
     } 
 
-    private void checkForEncounters(){
+    private void CheckForEncounters(){
 
         if (Physics2D.OverlapCircle(transform.position, 0.2f, grassLayer) != null ) {
             if (Random.Range(1, 101) <= 10) {
