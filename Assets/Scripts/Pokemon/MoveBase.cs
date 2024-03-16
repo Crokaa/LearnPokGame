@@ -9,11 +9,13 @@ public class MoveBase : ScriptableObject
 
     [TextArea]
     [SerializeField] string description;
+    [SerializeField] bool isSpecial;
 
     [SerializeField] PokemonType type;
     [SerializeField] int power;
     [SerializeField] int accuracy;
     [SerializeField] int pp;
+    
 
     public string Name
     {
@@ -23,6 +25,11 @@ public class MoveBase : ScriptableObject
     public string Description
     {
         get { return description; }
+    }
+
+    public bool IsSpecial
+    {
+        get { return isSpecial; }
     }
 
     public PokemonType Type
