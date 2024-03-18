@@ -2,6 +2,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Security.Cryptography.X509Certificates;
 
 public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy }
 
@@ -12,6 +13,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleHUD playerHud;
     [SerializeField] BattleHUD enemyHud;
     [SerializeField] BattleDialogBox dialogBox;
+    [SerializeField] PartyScreen partyScreen;
 
     public event Action<bool> OnBattleOver;
 
@@ -36,6 +38,8 @@ public class BattleSystem : MonoBehaviour
         playerHud.SetData(playerUnit.Pokemon);
         enemyHud.SetData(enemyUnit.Pokemon);
 
+        partyScreen.Init();
+
         dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
 
         yield return dialogBox.TypeDialog($"A wild {enemyUnit.Pokemon.Base.Name} appeared");
@@ -47,8 +51,14 @@ public class BattleSystem : MonoBehaviour
     {
 
         state = BattleState.PlayerAction;
-        StartCoroutine(dialogBox.TypeDialog("Choose an action"));
+        dialogBox.SetDialog("Choose an action");
         dialogBox.EnableActionSelector(true);
+    }
+
+    void OpenPartyScreen()
+    {
+        partyScreen.SetPartyData(playerParty.Pokemons);
+        partyScreen.gameObject.SetActive(true);
     }
 
     void PlayerMove()
@@ -160,12 +170,12 @@ public class BattleSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (currentAction < 3)
+            if (currentAction < 3 && currentAction != 1)
                 ++currentAction;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (currentAction > 0)
+            if (currentAction > 0 && currentAction != 2)
                 --currentAction;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -200,6 +210,7 @@ public class BattleSystem : MonoBehaviour
             {
 
                 //Pokemon
+                OpenPartyScreen();
             }
             else if (currentAction == 3)
             {
@@ -214,12 +225,12 @@ public class BattleSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (currentMove < playerUnit.Pokemon.Moves.Count - 1)
+            if (currentMove < playerUnit.Pokemon.Moves.Count - 1 && currentMove != 1)
                 ++currentMove;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (currentMove > 0)
+            if (currentMove > 0 && currentMove != 2)
                 --currentMove;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -232,6 +243,14 @@ public class BattleSystem : MonoBehaviour
             if (currentMove > 1)
                 currentMove -= 2;
         }
+        else if (Input.GetKeyDown(KeyCode.X))
+        {
+            dialogBox.EnableMoveSelector(false);
+            dialogBox.EnableDialogText(true);
+            PlayerAction();
+        }
+
+
 
         dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
 
