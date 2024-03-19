@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Squirtle
   description: 
   frontSprite: {fileID: 21300000, guid: 0a81526155dfd2b4f948ef793342475b, type: 3}
-  backSprite: {fileID: 21300000, guid: 0a81526155dfd2b4f948ef793342475b, type: 3}
+  backSprite: {fileID: 21300000, guid: d07c2edf2301e704ea374a9eb79801aa, type: 3}
   type1: 3
   type2: 0
   maxHp: 44
