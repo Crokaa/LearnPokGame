@@ -24,12 +24,14 @@ public class PartyScreen : MonoBehaviour
         for (int i = 0; i < memberSlots.Length; i++)
         {
 
-            if (i < pokemons.Count){
+            if (i < pokemons.Count)
+            {
                 memberSlots[i].SetData(pokemons[i]);
             }
-            else{
+            else
+            {
                 memberSlots[i].gameObject.SetActive(false);
-                }
+            }
         }
 
         messageText.text = "Choose a Pokemon.";
@@ -47,7 +49,8 @@ public class PartyScreen : MonoBehaviour
         }
     }
 
-    public void SetMessageText(string message) {
+    public void SetMessageText(string message)
+    {
 
         messageText.text = message;
     }

@@ -134,6 +134,15 @@ public enum PokemonType
     Fairy
 }
 
+public enum Stat {
+
+    Attack,
+    Defense,
+    SpAttack,
+    SpDefense,
+    Speed
+}
+
 public class TypeChart
 {
 

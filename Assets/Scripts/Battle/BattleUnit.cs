@@ -9,8 +9,25 @@ public class BattleUnit : MonoBehaviour
     [SerializeField] PokemonBase pokBase;
     [SerializeField] int level;
     [SerializeField] bool isPlayerUnit;
+    
+    [SerializeField] BattleHUD hud;
 
     public Pokemon Pokemon { get; set; }
+    public bool IsPlayerUnit
+    {
+        get
+        {
+            return isPlayerUnit;
+        }
+    }
+
+    public BattleHUD Hud
+    {
+        get
+        {
+            return hud;
+        }
+    }
 
     Image image;
     Vector3 originalPos;
@@ -35,12 +52,14 @@ public class BattleUnit : MonoBehaviour
 
         image.color = originalColor;
         PlayEnterAnimation();
-
+        
+        hud.SetData(pokemon);
     }
 
-    public void PlayEnterAnimation() {
+    public void PlayEnterAnimation()
+    {
 
-        if( isPlayerUnit )
+        if (isPlayerUnit)
             image.transform.localPosition = new Vector3(-500f, originalPos.y);
         else
             image.transform.localPosition = new Vector3(500f, originalPos.y);
@@ -48,7 +67,8 @@ public class BattleUnit : MonoBehaviour
         image.transform.DOLocalMoveX(originalPos.x, 1f);
     }
 
-    public void PlayAttackAnimation() {
+    public void PlayAttackAnimation()
+    {
 
         var sequence = DOTween.Sequence();
         if (isPlayerUnit)
@@ -65,7 +85,7 @@ public class BattleUnit : MonoBehaviour
         sequence.Append(image.DOColor(Color.gray, 0.1f));
         sequence.Append(image.DOColor(originalColor, 0.1f));
     }
-    
+
     public void PlayFaintAnimation()
     {
         var sequence = DOTween.Sequence();
