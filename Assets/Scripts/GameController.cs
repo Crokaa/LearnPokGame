@@ -20,6 +20,11 @@ public class GameController : MonoBehaviour
         battleSystem.OnBattleOver += EndBattle;
     }
 
+    private void Awake() {
+
+        ConditionsDB.Init();
+    }
+
     void StartBattle()
     {
         state = GameState.Battle;

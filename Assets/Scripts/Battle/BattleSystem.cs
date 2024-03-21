@@ -121,6 +121,18 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move, bool first)
     {
+
+        bool canAttack = sourceUnit.Pokemon.OnBeforeTurn();
+
+        if (!canAttack)
+        {
+            yield return ShowStatusChanges(sourceUnit.Pokemon);
+            yield return sourceUnit.Hud.UpdateHP();
+            yield return CheckIfDead(sourceUnit);
+            yield break;
+        }
+
+        yield return ShowStatusChanges(sourceUnit.Pokemon);
         move.Pp--;
         yield return dialogBox.TypeDialog($"{sourceUnit.Pokemon.Base.Name} used {move.Base.Name}");
 
@@ -139,6 +151,9 @@ public class BattleSystem : MonoBehaviour
             yield return ShowDamageDetails(damageDetails);
         }
 
+
+        yield return CheckIfDead(targetUnit);
+        
         if (targetUnit.Pokemon.HP <= 0)
         {
             yield return dialogBox.TypeDialog($"{targetUnit.Pokemon.Base.Name} fainted!");
@@ -150,6 +165,20 @@ public class BattleSystem : MonoBehaviour
 
         if (!first)
             yield return TurnOver(sourceUnit, targetUnit);
+
+    }
+
+    IEnumerator CheckIfDead(BattleUnit unit)
+    {
+
+        if (unit.Pokemon.HP <= 0)
+        {
+            yield return dialogBox.TypeDialog($"{unit.Pokemon.Base.Name} fainted!");
+            unit.PlayFaintAnimation();
+
+            yield return new WaitForSeconds(2f);
+            CheckBattleOver(unit);
+        }
 
     }
 
@@ -215,6 +244,12 @@ public class BattleSystem : MonoBehaviour
             {
 
                 target.SetStatus(effects.Status);
+            }
+
+            if (effects.VolatileStatus != ConditionID.none)
+            {
+
+                target.SetVolatileStatus(effects.VolatileStatus);
             }
 
             yield return ShowStatusChanges(source);

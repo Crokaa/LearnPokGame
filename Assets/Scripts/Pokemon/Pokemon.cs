@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -33,6 +34,10 @@ public class Pokemon
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
     public Condition Status { get; set; }
     public bool HpChanged { get; set; }
+    public int StatusStime { get; set; }
+    public Condition VolatileStatus { get; set; }
+    public int VolatileStatusTime { get; set; }
+    public event Action OnStatusChanged;
 
     public void Init()
     {
@@ -46,11 +51,13 @@ public class Pokemon
             if (Moves.Count >= 4)
                 break;
         }
-        
+
         CalculateStats();
 
         HP = MaxHp;
         ResetStatBoost();
+
+        Status = null;
     }
 
     void CalculateStats()
@@ -65,7 +72,7 @@ public class Pokemon
             { Stat.Speed, Mathf.FloorToInt((Base.Speed * Level) / 100f) + 5 }
         };
 
-        MaxHp = Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + 10;
+        MaxHp = Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + Level + 10;
     }
 
     public void ResetStatBoost()
@@ -125,19 +132,61 @@ public class Pokemon
         }
     }
 
-    public void SetStatus(ConditionID statusID)
+    public void CureStatus()
     {
-
-        Status = ConditionsDB.Conditions[statusID];
-        StatusChanges.Enqueue($"{Base.Name} {Status.StartMessage}");
+        Status = null;
+        OnStatusChanged?.Invoke();
     }
 
-    public void OnAfterTurn() {
+    public void CureVolatileStatus()
+    {
+        VolatileStatus = null;
+    }
+
+    public void SetStatus(ConditionID statusID)
+    {
+        if (Status is not null) return;
+        Status = ConditionsDB.Conditions[statusID];
+        Status?.OnStart?.Invoke(this);
+        StatusChanges.Enqueue($"{Base.Name} {Status.StartMessage}");
+
+        OnStatusChanged?.Invoke();
+    }
+
+    public void SetVolatileStatus(ConditionID statusID)
+    {
+        if (VolatileStatus is not null) return;
+        VolatileStatus = ConditionsDB.Conditions[statusID];
+        VolatileStatus?.OnStart?.Invoke(this);
+        StatusChanges.Enqueue($"{Base.Name} {VolatileStatus.StartMessage}");
+
+    }
+
+    public void OnAfterTurn()
+    {
         Status?.OnAfterTurn?.Invoke(this);
+        VolatileStatus?.OnAfterTurn?.Invoke(this);
+    }
+
+    public bool OnBeforeTurn()
+    {
+        if (Status?.OnBeforeTurn != null)
+        {
+
+            if (!Status.OnBeforeTurn(this))
+                return false;
+        }
+        if (VolatileStatus?.OnBeforeTurn != null)
+        {
+            if (!VolatileStatus.OnBeforeTurn(this))
+                return false;
+        }
+        return true;
     }
 
     public void OnBattleOver()
     {
+        VolatileStatus = null;
         ResetStatBoost();
     }
 
@@ -172,7 +221,7 @@ public class Pokemon
     {
 
         float critical = 1f;
-        if (Random.value * 100f <= 4.17)
+        if (UnityEngine.Random.value * 100f <= 4.17)
             critical = 1.5f;
 
         float effectiveness = TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type2);
@@ -187,7 +236,7 @@ public class Pokemon
         float attack = move.Base.Category == MoveCategory.Special ? attacker.SpAttack : attacker.Attack;
         float defense = move.Base.Category == MoveCategory.Special ? SpDefense : Defense;
 
-        float modifiers = Random.Range(0.85f, 1f) * effectiveness * critical;
+        float modifiers = UnityEngine.Random.Range(0.85f, 1f) * effectiveness * critical;
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);
@@ -198,16 +247,14 @@ public class Pokemon
 
     public void UpdateHP(int damage)
     {
-        Debug.Log($"previous HP - {HP}");
         HP = HP - damage < 0 ? 0 : HP - damage;
         HpChanged = true;
-        Debug.Log($"After burn HP - {HP}");
     }
 
     public Move GetRandomMove()
     {
 
-        int r = Random.Range(0, Moves.Count);
+        int r = UnityEngine.Random.Range(0, Moves.Count);
         return Moves[r];
     }
 

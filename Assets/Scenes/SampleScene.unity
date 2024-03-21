@@ -933,8 +933,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -56.17, y: 19.82}
-  m_SizeDelta: {x: 94.93, y: 52.67}
+  m_AnchoredPosition: {x: -46.119995, y: 19.82}
+  m_SizeDelta: {x: 74.84, y: 52.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &435001127
 MonoBehaviour:
@@ -1752,8 +1752,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 1.5700073, y: 30.485}
-  m_SizeDelta: {x: -56.86, y: 18}
+  m_AnchoredPosition: {x: 25, y: 30.485}
+  m_SizeDelta: {x: -101.880005, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &808770733
 MonoBehaviour:
@@ -1958,13 +1958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wildPokemons:
-  - _base: {fileID: 11400000, guid: 4f75228cb75ca7241ab6c8e55d20d298, type: 2}
-    level: 3
-  - _base: {fileID: 11400000, guid: 4f75228cb75ca7241ab6c8e55d20d298, type: 2}
-    level: 7
-  - _base: {fileID: 11400000, guid: bacef84664426d34487896c6280d9f10, type: 2}
-    level: 7
-  - _base: {fileID: 11400000, guid: bacef84664426d34487896c6280d9f10, type: 2}
+  - _base: {fileID: 11400000, guid: 7a1abadfc184bf94a9186eaeb2f41eb8, type: 2}
     level: 3
 --- !u!1 &1025169141
 GameObject:
@@ -10732,6 +10726,85 @@ MonoBehaviour:
   level: 7
   isPlayerUnit: 1
   hud: {fileID: 1398060112}
+--- !u!1 &1181789887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1181789888}
+  - component: {fileID: 1181789890}
+  - component: {fileID: 1181789889}
+  m_Layer: 0
+  m_Name: StatusText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1181789888
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181789887}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0001998, y: 1.0001998, z: 1.0001998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1398060109}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -256.26996, y: -15.665}
+  m_SizeDelta: {x: 57.46, y: 38.01}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1181789889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181789887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9528302, g: 0.0764062, b: 0.78611946, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 8a44246c714beea45b34e09593916fa1, type: 3}
+    m_FontSize: 28
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: PSN
+--- !u!222 &1181789890
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181789887}
+  m_CullTransparentMesh: 1
 --- !u!1 &1198975609
 GameObject:
   m_ObjectHideFlags: 0
@@ -11176,6 +11249,7 @@ RectTransform:
   - {fileID: 1741644868}
   - {fileID: 435001126}
   - {fileID: 808770732}
+  - {fileID: 1181789888}
   m_Father: {fileID: 2026274757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -11235,7 +11309,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 1741644869}
   levelText: {fileID: 435001127}
+  statusText: {fileID: 1181789889}
   hpBar: {fileID: 808770733}
+  psnColor: {r: 1, g: 0, b: 0.8503313, a: 1}
+  slpColor: {r: 0.21960784, g: 0.21960784, b: 0.21960784, a: 1}
+  frzColor: {r: 0.3726415, g: 0.531613, b: 1, a: 1}
+  brnColor: {r: 0.83137256, g: 0.2, b: 0, a: 1}
+  parColor: {r: 0.6509434, g: 0.5525877, b: 0, a: 1}
 --- !u!1001 &1411427690
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12191,8 +12271,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 104.21, y: 19.82}
-  m_SizeDelta: {x: 181, y: 52.67}
+  m_AnchoredPosition: {x: 113.9, y: 19.82}
+  m_SizeDelta: {x: 201.08, y: 52.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1741644869
 MonoBehaviour:
@@ -12274,8 +12354,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 1.5700073, y: 30.485}
-  m_SizeDelta: {x: -56.86, y: 18}
+  m_AnchoredPosition: {x: 25, y: 30.485}
+  m_SizeDelta: {x: -103.7, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1823231320
 MonoBehaviour:
@@ -12328,6 +12408,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823231318}
   m_CullTransparentMesh: 1
+--- !u!1 &1864828272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1864828273}
+  - component: {fileID: 1864828275}
+  - component: {fileID: 1864828274}
+  m_Layer: 0
+  m_Name: StatusText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1864828273
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864828272}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0001998, y: 1.0001998, z: 1.0001998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1910631772}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -257.2099, y: -15.664999}
+  m_SizeDelta: {x: 54.88, y: 37.96}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1864828274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864828272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9528302, g: 0.0764062, b: 0.78611946, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 8a44246c714beea45b34e09593916fa1, type: 3}
+    m_FontSize: 28
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: PSN
+--- !u!222 &1864828275
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864828272}
+  m_CullTransparentMesh: 1
 --- !u!1 &1910631770
 GameObject:
   m_ObjectHideFlags: 0
@@ -12361,7 +12520,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 1198975612}
   levelText: {fileID: 121456068}
+  statusText: {fileID: 1864828274}
   hpBar: {fileID: 1823231320}
+  psnColor: {r: 1, g: 0, b: 0.8509804, a: 1}
+  slpColor: {r: 0.21698111, g: 0.21698111, b: 0.21698111, a: 1}
+  frzColor: {r: 0.3764706, g: 0.53333336, b: 1, a: 1}
+  brnColor: {r: 0.8301887, g: 0.19705024, b: 0, a: 1}
+  parColor: {r: 0.6509804, g: 0.5529412, b: 0, a: 1}
 --- !u!224 &1910631772
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12377,6 +12542,7 @@ RectTransform:
   - {fileID: 1198975610}
   - {fileID: 121456070}
   - {fileID: 1823231319}
+  - {fileID: 1864828273}
   m_Father: {fileID: 2026274757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -12926,7 +13092,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pokemons:
-  - _base: {fileID: 11400000, guid: 54ff99890c6d05c40a64b9b97e6f8f88, type: 2}
+  - _base: {fileID: 11400000, guid: 7a1abadfc184bf94a9186eaeb2f41eb8, type: 2}
     level: 5
   - _base: {fileID: 11400000, guid: 4f75228cb75ca7241ab6c8e55d20d298, type: 2}
     level: 2
