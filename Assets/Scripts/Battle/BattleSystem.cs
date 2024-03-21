@@ -92,11 +92,11 @@ public class BattleSystem : MonoBehaviour
 
         state = BattleState.PerformMove;
         var move = playerUnit.Pokemon.Moves[currentMove];
-        yield return RunMove(playerUnit, enemyUnit, move);
+        yield return RunMove(playerUnit, enemyUnit, move, first);
 
         if (state == BattleState.PerformMove)
         {
-            if(first)
+            if (first)
                 StartCoroutine(EnemyMove(false));
             else
                 ActionSelection();
@@ -108,7 +108,7 @@ public class BattleSystem : MonoBehaviour
 
         state = BattleState.PerformMove;
         var move = enemyUnit.Pokemon.GetRandomMove();
-        yield return RunMove(enemyUnit, playerUnit, move);
+        yield return RunMove(enemyUnit, playerUnit, move, first);
 
         if (state == BattleState.PerformMove)
         {
@@ -119,7 +119,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move)
+    IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move, bool first)
     {
         move.Pp--;
         yield return dialogBox.TypeDialog($"{sourceUnit.Pokemon.Base.Name} used {move.Base.Name}");
@@ -147,6 +147,57 @@ public class BattleSystem : MonoBehaviour
             yield return new WaitForSeconds(2f);
             CheckBattleOver(targetUnit);
         }
+
+        if (!first)
+            yield return TurnOver(sourceUnit, targetUnit);
+
+    }
+
+    IEnumerator TurnOver(BattleUnit unit1, BattleUnit unit2)
+    {
+
+        BattleUnit fastestUnit;
+        BattleUnit slowestUnit;
+
+        if (unit1.Pokemon.Speed >= unit2.Pokemon.Speed)
+        {
+            fastestUnit = unit1;
+            slowestUnit = unit2;
+        }
+        else
+        {
+            fastestUnit = unit2;
+            slowestUnit = unit1;
+        }
+
+        fastestUnit.Pokemon.OnAfterTurn();
+        yield return ShowStatusChanges(fastestUnit.Pokemon);
+        yield return fastestUnit.Hud.UpdateHP();
+
+        if (fastestUnit.Pokemon.HP <= 0)
+        {
+            yield return dialogBox.TypeDialog($"{fastestUnit.Pokemon.Base.Name} fainted!");
+            fastestUnit.PlayFaintAnimation();
+
+            yield return new WaitForSeconds(2f);
+            CheckBattleOver(fastestUnit);
+        }
+        else
+        {
+
+            slowestUnit.Pokemon.OnAfterTurn();
+            yield return ShowStatusChanges(slowestUnit.Pokemon);
+            yield return slowestUnit.Hud.UpdateHP();
+
+            if (slowestUnit.Pokemon.HP <= 0)
+            {
+                yield return dialogBox.TypeDialog($"{slowestUnit.Pokemon.Base.Name} fainted!");
+                slowestUnit.PlayFaintAnimation();
+
+                yield return new WaitForSeconds(2f);
+                CheckBattleOver(slowestUnit);
+            }
+        }
     }
 
     IEnumerator RunMoveEffects(Pokemon source, Pokemon target, Move move)
@@ -159,6 +210,12 @@ public class BattleSystem : MonoBehaviour
                 source.ApplyBoost(effects.Boosts);
             else
                 target.ApplyBoost(effects.Boosts);
+
+            if (effects.Status != ConditionID.none)
+            {
+
+                target.SetStatus(effects.Status);
+            }
 
             yield return ShowStatusChanges(source);
             yield return ShowStatusChanges(target);
@@ -393,7 +450,10 @@ public class BattleSystem : MonoBehaviour
 
         yield return dialogBox.TypeDialog($"Go {newPokemon.Base.Name}!");
         if (fainted)
+        {
+            yield return TurnOver(playerUnit, enemyUnit);
             ActionSelection();
+        }
         else
             StartCoroutine(EnemyMove(false));
 

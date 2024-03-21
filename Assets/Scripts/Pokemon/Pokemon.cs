@@ -31,6 +31,8 @@ public class Pokemon
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoost { get; private set; }
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
+    public Condition Status { get; set; }
+    public bool HpChanged { get; set; }
 
     public void Init()
     {
@@ -44,7 +46,7 @@ public class Pokemon
             if (Moves.Count >= 4)
                 break;
         }
-
+        
         CalculateStats();
 
         HP = MaxHp;
@@ -123,6 +125,17 @@ public class Pokemon
         }
     }
 
+    public void SetStatus(ConditionID statusID)
+    {
+
+        Status = ConditionsDB.Conditions[statusID];
+        StatusChanges.Enqueue($"{Base.Name} {Status.StartMessage}");
+    }
+
+    public void OnAfterTurn() {
+        Status?.OnAfterTurn?.Invoke(this);
+    }
+
     public void OnBattleOver()
     {
         ResetStatBoost();
@@ -179,14 +192,16 @@ public class Pokemon
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);
 
-        HP -= damage;
-        if (HP <= 0)
-        {
-            HP = 0;
-            damageDetails.Fainted = true;
-        }
-
+        UpdateHP(damage);
         return damageDetails;
+    }
+
+    public void UpdateHP(int damage)
+    {
+        Debug.Log($"previous HP - {HP}");
+        HP = HP - damage < 0 ? 0 : HP - damage;
+        HpChanged = true;
+        Debug.Log($"After burn HP - {HP}");
     }
 
     public Move GetRandomMove()
