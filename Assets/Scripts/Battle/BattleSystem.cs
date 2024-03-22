@@ -30,7 +30,7 @@ public class BattleSystem : MonoBehaviour
         currentAction = 0;
         currentMove = 0;
         currentMember = 0;
-        
+
         StartCoroutine(SetupBattle());
     }
 
@@ -145,7 +145,7 @@ public class BattleSystem : MonoBehaviour
 
             if (move.Base.Category == MoveCategory.Status)
             {
-                yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, move);
+                yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, move.Base.Target, move.Base.Effects);
             }
             else
             {
@@ -153,6 +153,17 @@ public class BattleSystem : MonoBehaviour
                 var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon);
                 yield return targetUnit.Hud.UpdateHP();
                 yield return ShowDamageDetails(damageDetails);
+            }
+
+            if (move.Base.SecEffects is not null && move.Base.SecEffects.Count > 0 && targetUnit.Pokemon.HP > 0)
+            {
+
+                foreach(var secEffect in move.Base.SecEffects) {
+
+                    var rdm = UnityEngine.Random.Range(1,100);
+                    if (rdm <= secEffect.Chance)
+                        yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, secEffect.Target, secEffect);
+                }
             }
 
 
@@ -236,13 +247,12 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    IEnumerator RunMoveEffects(Pokemon source, Pokemon target, Move move)
+    IEnumerator RunMoveEffects(Pokemon source, Pokemon target, MoveTarget moveTarget, MoveEffects effects)
     {
 
-        var effects = move.Base.Effects;
         if (effects.Boosts != null)
         {
-            if (move.Base.Target == MoveTarget.Self)
+            if (moveTarget == MoveTarget.Self)
                 source.ApplyBoost(effects.Boosts);
             else
                 target.ApplyBoost(effects.Boosts);

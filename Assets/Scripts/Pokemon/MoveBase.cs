@@ -18,6 +18,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] MoveCategory category;
     [SerializeField] MoveEffects effects;
     [SerializeField] MoveTarget target;
+    [SerializeField] List<SecondaryEffects> secEffects;
 
 
     public string Name
@@ -69,6 +70,11 @@ public class MoveBase : ScriptableObject
     {
         get { return target; }
     }
+
+    public List<SecondaryEffects> SecEffects
+    {
+        get { return secEffects; }
+    }
 }
 
 [System.Serializable]
@@ -97,6 +103,26 @@ public class MoveEffects
     public ConditionID VolatileStatus {
         get {
             return volatileStatus;
+        }
+    }
+}
+
+[System.Serializable]
+public class SecondaryEffects : MoveEffects
+{
+
+    [SerializeField] int chance;
+    [SerializeField] MoveTarget target;
+
+    public int Chance {
+        get {
+            return chance;
+        }
+    }
+
+    public MoveTarget Target {
+        get {
+            return target;
         }
     }
 }
