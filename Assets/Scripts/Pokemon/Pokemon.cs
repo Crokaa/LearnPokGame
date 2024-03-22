@@ -30,7 +30,7 @@ public class Pokemon
     public List<Move> Moves { get; set; }
     public int HP { get; set; }
     public Dictionary<Stat, int> Stats { get; private set; }
-    public Dictionary<Stat, int> StatBoost { get; private set; }
+    public Dictionary<Stat, int> StatBoosts { get; private set; }
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
     public Condition Status { get; set; }
     public bool HpChanged { get; set; }
@@ -58,6 +58,7 @@ public class Pokemon
         ResetStatBoost();
 
         Status = null;
+        VolatileStatus = null;
     }
 
     void CalculateStats()
@@ -78,13 +79,15 @@ public class Pokemon
     public void ResetStatBoost()
     {
 
-        StatBoost = new Dictionary<Stat, int>
+        StatBoosts = new Dictionary<Stat, int>
         {
             { Stat.Attack, 0 },
             { Stat.Defense, 0 },
             { Stat.SpAttack, 0 },
             { Stat.SpDefense, 0 },
-            { Stat.Speed, 0 }
+            { Stat.Speed, 0 },
+            { Stat.Accuracy, 0},
+            { Stat.Evasion, 0 }
         };
     }
 
@@ -93,7 +96,7 @@ public class Pokemon
 
         int statVal = Stats[stat];
 
-        int boost = StatBoost[stat];
+        int boost = StatBoosts[stat];
         var boostValues = new float[] { 1f, 1.5f, 2f, 2.5f, 3f, 3.5f, 4f };
 
         if (boost >= 0)
@@ -112,7 +115,7 @@ public class Pokemon
             var stat = statBoost.stat;
             var boost = statBoost.boost;
 
-            StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
+            StatBoosts[stat] = Mathf.Clamp(StatBoosts[stat] + boost, -6, 6);
 
             switch (boost)
             {
