@@ -477,6 +477,7 @@ public class BattleSystem : MonoBehaviour
             fainted = true;
 
         playerUnit.Pokemon.ResetStatBoost();
+        playerUnit.Pokemon.CureVolatileStatus();
         playerUnit.Setup(newPokemon);
         dialogBox.SetMoveNames(newPokemon.Moves);
         currentAction = 0;
