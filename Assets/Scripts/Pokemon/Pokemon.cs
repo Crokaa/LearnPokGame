@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Unity.Collections;
 using UnityEngine;
 
 [System.Serializable]
@@ -255,11 +257,13 @@ public class Pokemon
         HpChanged = true;
     }
 
+    // For now only works if enemy has moves with PP, will be fixed later when introducing Struggle
     public Move GetRandomMove()
     {
+        var movesWithPP = Moves.Where(x => x.Pp > 0).ToList();
 
-        int r = UnityEngine.Random.Range(0, Moves.Count);
-        return Moves[r];
+        int r = UnityEngine.Random.Range(0, movesWithPP.Count);
+        return movesWithPP[r];
     }
 
 }
