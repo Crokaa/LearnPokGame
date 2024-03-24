@@ -23,7 +23,7 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
     int currentMember;
-    
+
     // These 3 are used for running. Even after speed drops the formula uses the original speed.
     int originalPlayerSpeed;
     int originalEnemySpeed;
@@ -69,7 +69,6 @@ public class BattleSystem : MonoBehaviour
 
     void ActionSelection()
     {
-
         state = BattleState.ActionSelection;
         dialogBox.SetDialog("Choose an action");
         dialogBox.EnableActionSelector(true);
@@ -84,7 +83,6 @@ public class BattleSystem : MonoBehaviour
 
     void MoveSelection()
     {
-
         state = BattleState.MoveSelection;
         dialogBox.EnableActionSelector(false);
         dialogBox.EnableDialogText(false);
@@ -138,16 +136,19 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
+            // Every action here required state to be busy because it's doing something
+            state = BattleState.Busy;
+
             if (battleAction == BattleAction.SwitchPokemon)
             {
+
                 var selectedPokemon = playerParty.Pokemons[currentMember];
-                state = BattleState.Busy;
                 yield return SwitchPokemon(selectedPokemon);
 
             }
             else if (battleAction == BattleAction.Run)
                 yield return TryToEscape();
-            
+
 
             // Enemy turn as this runs every time the player does something that isn't attacking
 
@@ -459,11 +460,14 @@ public class BattleSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z))
         {
             var move = playerUnit.Pokemon.Moves[currentMove];
-            if (move.Pp == 0) return;
+            
 
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
-            StartCoroutine(RunTurns(BattleAction.Move));
+            if (move.Pp == 0) 
+                StartCoroutine(MoveNoPp());
+            else
+                StartCoroutine(RunTurns(BattleAction.Move));
         }
 
     }
@@ -553,11 +557,21 @@ public class BattleSystem : MonoBehaviour
 
     }
 
-    IEnumerator TryToEscape()
+    IEnumerator MoveNoPp()
     {
 
         state = BattleState.Busy;
+        yield return dialogBox.TypeDialog("There's no PP left for this move!");
 
+        while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
+            yield return null;
+        
+        MoveSelection();
+
+    }
+
+    IEnumerator TryToEscape()
+    {
         /*
             TO DO: check if it's trainer battle, later when trainers are implemented
         */
