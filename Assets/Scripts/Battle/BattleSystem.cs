@@ -23,6 +23,11 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
     int currentMember;
+    
+    // These 3 are used for running. Even after speed drops the formula uses the original speed.
+    int originalPlayerSpeed;
+    int originalEnemySpeed;
+    int runAttempts;
 
     PokemonParty playerParty;
     Pokemon wildPokemon;
@@ -42,6 +47,9 @@ public class BattleSystem : MonoBehaviour
     {
         playerUnit.Setup(playerParty.GetHealthyPokemon());
         enemyUnit.Setup(wildPokemon);
+
+        originalPlayerSpeed = playerUnit.Pokemon.Speed;
+        originalEnemySpeed = enemyUnit.Pokemon.Speed;
 
         partyScreen.Init();
 
@@ -101,9 +109,9 @@ public class BattleSystem : MonoBehaviour
             //Check who attacks first
             bool playerGoesFirst = playerUnit.Pokemon.Speed >= enemyUnit.Pokemon.Speed;
 
-            if(playerMovePriority > enemyMovePriority)
+            if (playerMovePriority > enemyMovePriority)
                 playerGoesFirst = true;
-            else if(playerMovePriority < enemyMovePriority)
+            else if (playerMovePriority < enemyMovePriority)
                 playerGoesFirst = false;
 
             fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
@@ -128,24 +136,35 @@ public class BattleSystem : MonoBehaviour
                     yield break;
             }
         }
-        else if (battleAction == BattleAction.SwitchPokemon)
+        else
         {
-            var selectedPokemon = playerParty.Pokemons[currentMember];
-            state = BattleState.Busy;
-            yield return SwitchPokemon(selectedPokemon);
+            if (battleAction == BattleAction.SwitchPokemon)
+            {
+                var selectedPokemon = playerParty.Pokemons[currentMember];
+                state = BattleState.Busy;
+                yield return SwitchPokemon(selectedPokemon);
+
+            }
+            else if (battleAction == BattleAction.Run)
+                yield return TryToEscape();
+            
+
+            // Enemy turn as this runs every time the player does something that isn't attacking
 
             var enemyMove = enemyUnit.Pokemon.GetRandomMove();
             yield return RunMove(enemyUnit, playerUnit, enemyMove);
 
-            bool playerIsFaster = playerUnit.Pokemon.Speed >= enemyUnit.Pokemon.Speed;
-            fastestUnit = playerIsFaster ? playerUnit : enemyUnit;
-            slowestUnit = playerIsFaster ? enemyUnit : playerUnit;
             if (state == BattleState.BattleOver)
                 yield break;
-        }
 
+        }
         if (state != BattleState.BattleOver)
         {
+
+            // Calculate this again because there's a chance the player increased its speed or swapped pokemons
+            bool playerGoesFirst = playerUnit.Pokemon.Speed >= enemyUnit.Pokemon.Speed;
+            fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
+            slowestUnit = playerGoesFirst ? enemyUnit : playerUnit;
 
             yield return RunAfterTurn(fastestUnit);
             yield return RunAfterTurn(slowestUnit);
@@ -400,8 +419,8 @@ public class BattleSystem : MonoBehaviour
             }
             else if (currentAction == 3)
             {
-
                 //Run
+                StartCoroutine(RunTurns(BattleAction.Run));
             }
         }
     }
@@ -440,7 +459,7 @@ public class BattleSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z))
         {
             var move = playerUnit.Pokemon.Moves[currentMove];
-            if(move.Pp == 0) return;
+            if (move.Pp == 0) return;
 
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
@@ -523,6 +542,7 @@ public class BattleSystem : MonoBehaviour
         playerUnit.Pokemon.ResetStatBoost();
         playerUnit.Pokemon.CureVolatileStatus();
         playerUnit.Setup(newPokemon);
+        originalPlayerSpeed = playerUnit.Pokemon.Speed;
         dialogBox.SetMoveNames(newPokemon.Moves);
         currentAction = 0;
         currentMove = 0;
@@ -531,6 +551,39 @@ public class BattleSystem : MonoBehaviour
 
         state = BattleState.RunningTurn;
 
+    }
+
+    IEnumerator TryToEscape()
+    {
+
+        state = BattleState.Busy;
+
+        /*
+            TO DO: check if it's trainer battle, later when trainers are implemented
+        */
+
+        if (originalPlayerSpeed >= originalEnemySpeed)
+        {
+            yield return dialogBox.TypeDialog("Ran away safely!");
+            BattleOver(true);
+        }
+        else
+        {
+
+            runAttempts++;
+            var r = UnityEngine.Random.Range(0, 256);
+
+            if (originalPlayerSpeed * 128 / originalEnemySpeed + 30 * runAttempts >= r)
+            {
+                yield return dialogBox.TypeDialog("Ran away safely!");
+                BattleOver(true);
+            }
+            else
+            {
+                yield return dialogBox.TypeDialog("Can't escape!");
+                state = BattleState.RunningTurn;
+            }
+        }
     }
 
 }
