@@ -18,7 +18,7 @@ MonoBehaviour:
   power: 0
   accuracy: 0
   alwaysHits: 1
-  pp: 20
+  pp: 0
   priority: 0
   category: 2
   effects:

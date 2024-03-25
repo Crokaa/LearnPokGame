@@ -461,7 +461,6 @@ public class BattleSystem : MonoBehaviour
         {
             var move = playerUnit.Pokemon.Moves[currentMove];
             
-
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
             if (move.Pp == 0) 
