@@ -5,90 +5,56 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed;
-    public LayerMask solidObjects;
-    public LayerMask grassLayer;
-    public LayerMask interactableLayer;
-
     public event Action OnEncountered;
-
-    private bool isMoving;
     private Vector2 input;
-    private Animator animator;
+    private Character character;
 
-    private void Awake() {
-        animator = GetComponent<Animator>();
+    private void Awake()
+    {
+        character = GetComponent<Character>();
     }
 
-    public void HandleUpdate() {
+    public void HandleUpdate()
+    {
 
-        if(!isMoving){
+        if (!character.IsMoving)
+        {
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
 
-            if (input.x != 0) 
+            if (input.x != 0)
                 input.y = 0;
 
-            if(input != Vector2.zero) {
-                animator.SetFloat("moveX", input.x);
-                animator.SetFloat("moveY", input.y);
+            if (input != Vector2.zero)
+                StartCoroutine(character.Move(input, CheckForEncounters));
+                
+            character.HandleUpdate();
 
-                var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
-
-                // this new vector points at the target's feet and not its center/face
-                if(IsWalkable(new Vector3(targetPos.x, targetPos.y - 0.5f)))
-                    StartCoroutine(Move(targetPos));
-            }
+            if (Input.GetKeyDown(KeyCode.Z))
+                Interact();
         }
-
-        animator.SetBool("isMoving", isMoving);    
-
-        if(Input.GetKeyDown(KeyCode.Z))
-            Interact();
     }
-
-    void Interact() {
-        
-        var faceDir = new Vector3(animator.GetFloat("moveX"), animator.GetFloat("moveY"));
+    void Interact()
+    {
+        var faceDir = new Vector3(character.Animator.MoveX, character.Animator.MoveY);
         var interactPos = transform.position + faceDir;
 
-        var collider = Physics2D.OverlapCircle(interactPos, 0.1f, interactableLayer);
+        var collider = Physics2D.OverlapCircle(interactPos, 0.1f, GameLayers.Instance.InteractableLayer);
 
-        if(collider != null){
-            collider.GetComponent<Interactable>()?.Interact();
+        if (collider != null)
+        {
+            collider.GetComponent<Interactable>()?.Interact(transform);
         }
     }
 
-    IEnumerator Move(Vector3 targetPos) {
+    private void CheckForEncounters()
+    {
 
-        isMoving = true;
-        while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon) {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-
-            yield return null;
-        }
-        transform.position = targetPos;
-
-        isMoving = false;
-
-        CheckForEncounters();
-    }
-
-    private bool IsWalkable(Vector3 targetPos) {
-
-        if (Physics2D.OverlapCircle(targetPos, 0.005f, solidObjects | interactableLayer) != null )
-            return false;
-        
-        return true;
-    } 
-
-    private void CheckForEncounters(){
-
-        if (Physics2D.OverlapCircle(transform.position, 0.1f, grassLayer) != null ) {
-            if (UnityEngine.Random.Range(1, 101) <= 10) {
-                animator.SetBool("isMoving", false);
+        if (Physics2D.OverlapCircle(transform.position, 0.1f, GameLayers.Instance.GrassLayer) != null)
+        {
+            if (UnityEngine.Random.Range(1, 101) <= 10)
+            {
+                character.Animator.IsMoving = false;
                 OnEncountered();
             }
 
