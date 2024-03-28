@@ -118,6 +118,7 @@ public class Pokemon
             var stat = statBoost.stat;
             var boost = statBoost.boost;
 
+            var prevBoost = StatBoosts[stat];
             StatBoosts[stat] = Mathf.Clamp(StatBoosts[stat] + boost, -6, 6);
 
             switch (boost)
@@ -125,14 +126,20 @@ public class Pokemon
                 case 1:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} rose!");
                     break;
-                case > 1:
+                case 2:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} sharply rose!");
+                    break;
+                case 3:
+                    StatusChanges.Enqueue($"{Base.Name}'s {stat} rose drastically!");
                     break;
                 case -1:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} fell!");
                     break;
-                case < -1:
+                case -2:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} harshly fell!");
+                    break;
+                case -3:
+                    StatusChanges.Enqueue($"{Base.Name}'s {stat} severely fell!");
                     break;
             }
         }
