@@ -32,16 +32,36 @@ public class Character : MonoBehaviour
         targetPos.x += moveVector.x;
         targetPos.y += moveVector.y;
 
+
+        var dir = (targetPos - transform.position).normalized;
+
+        var nextPos = transform.position + dir;
         // this new vector points at the target's feet and not its center/face
-        if (!IsPathClear(targetPos))
+        if (!IsWalkable(nextPos))
             yield break;
 
         IsMoving = true;
         while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+            nextPos = transform.position + dir;
+            if (IsWalkable(nextPos))
+            {
+                while ((nextPos - transform.position).sqrMagnitude > Mathf.Epsilon)
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, nextPos, moveSpeed * Time.deltaTime);
+                    yield return null;
+                }
+                transform.position = nextPos;
+            }
+            else
+            {
+                IsMoving = false;
 
-            yield return null;
+                OnMoveOver?.Invoke();
+
+                yield break;
+            }
+
         }
         transform.position = targetPos;
 
@@ -56,13 +76,13 @@ public class Character : MonoBehaviour
         animator.IsMoving = IsMoving;
     }
 
+    // Keep this as it might be useful
     private bool IsPathClear(Vector3 targetPos)
     {
         var diff = targetPos - transform.position;
         var dir = diff.normalized;
 
-        //position + dir so we don't count the character itself
-        return !Physics2D.BoxCast(transform.position + dir, new Vector2(0.2f, 0.2f), 0, dir, diff.magnitude - 1,
+        return !Physics2D.BoxCast(transform.position + dir, new Vector2(0.1f, 0.1f), 0, dir, diff.magnitude - 1,
         GameLayers.Instance.SolidObjects | GameLayers.Instance.InteractableLayer | GameLayers.Instance.PlayerLayer);
     }
 
