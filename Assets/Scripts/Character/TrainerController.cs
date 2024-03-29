@@ -4,23 +4,40 @@ using UnityEngine;
 
 public class TrainerController : MonoBehaviour
 {
+    [SerializeField] string name;
     [SerializeField] GameObject exclamation;
     [SerializeField] Dialog dialog;
     [SerializeField] GameObject fov;
+    [SerializeField] Sprite sprite;
+
+    public string Name
+    {
+
+        get { return name; }
+    }
+
+    public Sprite Sprite
+    {
+
+        get { return sprite; }
+    }
 
     Character character;
 
-    private void Start() {
+    private void Start()
+    {
 
         SetFovRotations(character.Animator.DefaultDirection);
     }
 
-    private void Awake() {
+    private void Awake()
+    {
 
         character = GetComponent<Character>();
     }
 
-    public IEnumerator TriggerTrainerBattle(PlayerController player) {
+    public IEnumerator TriggerTrainerBattle(PlayerController player)
+    {
 
         exclamation.SetActive(true);
         yield return new WaitForSeconds(0.5f);
@@ -32,20 +49,22 @@ public class TrainerController : MonoBehaviour
 
         yield return character.Move(moveVec);
 
-        StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () => {
-            Debug.Log("Start battle");
+        StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () =>
+        {
+            GameController.Instance.StartTrainerBattle(this);
         }));
     }
 
-    public void SetFovRotations(FacingDirection dir) {
+    public void SetFovRotations(FacingDirection dir)
+    {
 
         float angle = 0f;
 
-        if(dir == FacingDirection.Right)
+        if (dir == FacingDirection.Right)
             angle = 90;
         else if (dir == FacingDirection.Left)
             angle = -90;
-        else if(dir == FacingDirection.Up)
+        else if (dir == FacingDirection.Up)
             angle = 180;
 
         fov.transform.eulerAngles = new Vector3(0f, 0f, angle);

@@ -5,10 +5,25 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] string name;
     public event Action OnEncountered;
     public event Action<Collider2D> OnEnterTrainerView;
     private Vector2 input;
     private Character character;
+
+    [SerializeField] Sprite sprite;
+
+    public string Name
+    {
+
+        get { return name; }
+    }
+
+    public Sprite Sprite
+    {
+
+        get { return sprite; }
+    }
 
     private void Awake()
     {

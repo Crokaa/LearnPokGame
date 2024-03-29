@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Resources;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver }
 public enum BattleAction { Move, SwitchPokemon, Items, Run }
@@ -15,6 +16,8 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleUnit enemyUnit;
     [SerializeField] BattleDialogBox dialogBox;
     [SerializeField] PartyScreen partyScreen;
+    [SerializeField] Image playerImage;
+    [SerializeField] Image trainerImage;
 
     public event Action<bool> OnBattleOver;
 
@@ -30,12 +33,31 @@ public class BattleSystem : MonoBehaviour
     int runAttempts;
 
     PokemonParty playerParty;
+    PokemonParty trainerParty;
     Pokemon wildPokemon;
+    bool isTrainerBattle;
+    PlayerController player;
+    TrainerController trainer;
 
     public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon)
     {
         this.playerParty = playerParty;
         this.wildPokemon = wildPokemon;
+        currentAction = 0;
+        currentMove = 0;
+        currentMember = 0;
+        isTrainerBattle = false;
+
+        StartCoroutine(SetupBattle());
+    }
+
+    public void StartTrainerBattle(PokemonParty playerParty, PokemonParty trainerParty)
+    {
+        this.playerParty = playerParty;
+        this.trainerParty = trainerParty;
+        player = playerParty.GetComponent<PlayerController>();
+        trainer = trainerParty.GetComponent<TrainerController>();
+        isTrainerBattle = true;
         currentAction = 0;
         currentMove = 0;
         currentMember = 0;
@@ -45,18 +67,57 @@ public class BattleSystem : MonoBehaviour
 
     public IEnumerator SetupBattle()
     {
-        playerUnit.Setup(playerParty.GetHealthyPokemon());
-        enemyUnit.Setup(wildPokemon);
+        playerUnit.Clear();
+        enemyUnit.Clear();
 
-        originalPlayerSpeed = playerUnit.Pokemon.Speed;
-        originalEnemySpeed = enemyUnit.Pokemon.Speed;
+        if (!isTrainerBattle)
+        {
 
-        partyScreen.Init();
+            // Wild Pokemon
+            playerUnit.Setup(playerParty.GetHealthyPokemon());
+            enemyUnit.Setup(wildPokemon);
+
+            // These are only relevant to run away (which we can't in trainer battles)
+            originalPlayerSpeed = playerUnit.Pokemon.Speed;
+            originalEnemySpeed = enemyUnit.Pokemon.Speed;
+
+            yield return dialogBox.TypeDialog($"A wild {enemyUnit.Pokemon.Base.Name} appeared");
+        }
+        else
+        {
+
+            // Trainer battle
+            playerUnit.gameObject.SetActive(false);
+            enemyUnit.gameObject.SetActive(false);
+
+            playerImage.gameObject.SetActive(true);
+            trainerImage.gameObject.SetActive(true);
+
+            playerImage.sprite = player.Sprite;
+            trainerImage.sprite = trainer.Sprite;
+
+            yield return dialogBox.TypeDialog($"{trainer.Name} wants to battle.");
+
+            //Send first pokemon of the trainer
+            trainerImage.gameObject.SetActive(false);
+            enemyUnit.gameObject.SetActive(true);
+            var enemyPokemon = trainerParty.GetHealthyPokemon();
+            enemyUnit.Setup(enemyPokemon);
+
+            yield return dialogBox.TypeDialog($"{trainer.Name} sent out {enemyPokemon.Base.Name}");
+
+
+            //Send first pokemon of the player
+            playerImage.gameObject.SetActive(false);
+            playerUnit.gameObject.SetActive(true);
+            var playerPokemon = playerParty.GetHealthyPokemon();
+            playerUnit.Setup(playerPokemon);
+
+            yield return dialogBox.TypeDialog($"Go {playerPokemon.Base.Name}!");
+        }
 
         dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
-
-        yield return dialogBox.TypeDialog($"A wild {enemyUnit.Pokemon.Base.Name} appeared");
-
+        partyScreen.Init();
         ActionSelection();
     }
 
@@ -125,8 +186,10 @@ public class BattleSystem : MonoBehaviour
             // Update the current fastest unit (even if not faster) cause the fastest one can die with a VolatileStatus and we don't want to attack it
             if (playerGoesFirst && fastestUnit.Pokemon.HP <= 0)
                 fastestUnit = playerUnit;
+            else if (!playerGoesFirst && fastestUnit.Pokemon.HP <= 0)
+                fastestUnit = enemyUnit;
 
-            if (slowestPokemon.HP >= 0)
+            if (slowestPokemon.HP > 0)
             {
                 yield return RunMove(slowestUnit, fastestUnit, slowestUnit.Pokemon.CurrentMove);
 
@@ -338,7 +401,30 @@ public class BattleSystem : MonoBehaviour
                 BattleOver(false);
         }
         else
-            BattleOver(true);
+        {
+            if (!isTrainerBattle)
+                BattleOver(true);
+            else
+            {
+                var nextPokemon = trainerParty.GetHealthyPokemon();
+                if (nextPokemon != null)
+                {
+                    StartCoroutine(SendNextTrainerPokemon(nextPokemon));
+                } else
+                    BattleOver(true);
+            }
+
+        }
+    }
+
+    IEnumerator SendNextTrainerPokemon(Pokemon nextPokemon)
+    {
+        state = BattleState.Busy;
+
+        enemyUnit.Setup(nextPokemon);
+        yield return dialogBox.TypeDialog($"{trainer.Name} sent oud {nextPokemon.Base.Name}.");
+
+        state = BattleState.RunningTurn;
     }
 
     IEnumerator ShowDamageDetails(DamageDetails damageDetails)
@@ -460,10 +546,10 @@ public class BattleSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z))
         {
             var move = playerUnit.Pokemon.Moves[currentMove];
-            
+
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
-            if (move.Pp == 0) 
+            if (move.Pp == 0)
                 StartCoroutine(MoveNoPp());
             else
                 StartCoroutine(RunTurns(BattleAction.Move));
@@ -564,7 +650,7 @@ public class BattleSystem : MonoBehaviour
 
         while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
             yield return null;
-        
+
         MoveSelection();
 
     }
