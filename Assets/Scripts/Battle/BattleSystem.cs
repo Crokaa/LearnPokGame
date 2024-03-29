@@ -410,7 +410,8 @@ public class BattleSystem : MonoBehaviour
                 if (nextPokemon != null)
                 {
                     StartCoroutine(SendNextTrainerPokemon(nextPokemon));
-                } else
+                }
+                else
                     BattleOver(true);
             }
 
@@ -661,26 +662,35 @@ public class BattleSystem : MonoBehaviour
             TO DO: check if it's trainer battle, later when trainers are implemented
         */
 
-        if (originalPlayerSpeed >= originalEnemySpeed)
+        if (isTrainerBattle)
         {
-            yield return dialogBox.TypeDialog("Ran away safely!");
-            BattleOver(true);
+
+            yield return dialogBox.TypeDialog("No! There's no running from a Trainer battle!");
+            ActionSelection();
         }
         else
         {
-
-            runAttempts++;
-            var r = UnityEngine.Random.Range(0, 256);
-
-            if (originalPlayerSpeed * 128 / originalEnemySpeed + 30 * runAttempts >= r)
+            if (originalPlayerSpeed >= originalEnemySpeed)
             {
                 yield return dialogBox.TypeDialog("Ran away safely!");
                 BattleOver(true);
             }
             else
             {
-                yield return dialogBox.TypeDialog("Can't escape!");
-                state = BattleState.RunningTurn;
+
+                runAttempts++;
+                var r = UnityEngine.Random.Range(0, 256);
+
+                if (originalPlayerSpeed * 128 / originalEnemySpeed + 30 * runAttempts >= r)
+                {
+                    yield return dialogBox.TypeDialog("Ran away safely!");
+                    BattleOver(true);
+                }
+                else
+                {
+                    yield return dialogBox.TypeDialog("Can't escape!");
+                    state = BattleState.RunningTurn;
+                }
             }
         }
     }
