@@ -321,6 +321,8 @@ public class BattleSystem : MonoBehaviour
         yield return sourceUnit.Hud.UpdateHP();
 
         yield return CheckIfDead(sourceUnit);
+
+        yield return new WaitUntil(() => state == BattleState.RunningTurn);
     }
 
     IEnumerator RunMoveEffects(Pokemon source, Pokemon target, MoveTarget moveTarget, MoveEffects effects)
