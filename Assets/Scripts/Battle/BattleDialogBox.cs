@@ -12,12 +12,15 @@ public class BattleDialogBox : MonoBehaviour
     [SerializeField] GameObject actionSelector;
     [SerializeField] GameObject moveSelector;
     [SerializeField] GameObject moveDetails;
+    [SerializeField] GameObject choiceBox;
 
     [SerializeField] List<Text> actionTexts;
     [SerializeField] List<Text> moveTexts;
 
     [SerializeField] Text ppText;
     [SerializeField] Text typeText;
+    [SerializeField] Text yesText;
+    [SerializeField] Text noText;
 
 
     public void SetDialog(string dialog)
@@ -53,6 +56,11 @@ public class BattleDialogBox : MonoBehaviour
     {
         moveSelector.SetActive(enabled);
         moveDetails.SetActive(enabled);
+    }
+
+    public void EnableChoiceBox(bool enabled)
+    {
+        choiceBox.SetActive(enabled);
     }
 
     public void UpdateActionSelection(int selectedAction)
@@ -96,12 +104,27 @@ public class BattleDialogBox : MonoBehaviour
         ppText.text = $"PP {move.Pp}/{move.Base.Pp}";
         typeText.text = move.Base.Type.ToString();
 
-        if( move.Pp == 0)
+        if (move.Pp == 0)
             ppText.color = Color.red;
-        else if(move.Pp <= move.Base.Pp / 2)
+        else if (move.Pp <= move.Base.Pp / 2)
             ppText.color = new Color(1f, 0.647f, 0f);
         else
             ppText.color = Color.black;
 
+    }
+
+    public void UpdateChoiceBox(bool yesSelected)
+    {
+
+        if (yesSelected)
+        {
+            yesText.color = highlightedColor;
+            noText.color = Color.black;
+        }
+        else
+        {
+            yesText.color = Color.black;
+            noText.color = highlightedColor;
+        }
     }
 }

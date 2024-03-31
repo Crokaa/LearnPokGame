@@ -31,6 +31,11 @@ public class TrainerController : MonoBehaviour, Interactable
         SetFovRotations(character.Animator.DefaultDirection);
     }
 
+    private void Update()
+    {
+        character.HandleUpdate();
+    }
+
     private void Awake()
     {
         character = GetComponent<Character>();
