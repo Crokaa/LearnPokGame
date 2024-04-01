@@ -229,15 +229,21 @@ public class BattleSystem : MonoBehaviour
                 yield return TryToEscape();
 
 
-            // Enemy turn as this runs every time the player does something that isn't attacking
-
-            var enemyMove = enemyUnit.Pokemon.GetRandomMove();
-            yield return RunMove(enemyUnit, playerUnit, enemyMove);
-
             if (state == BattleState.BattleOver)
                 yield break;
 
+
+            if (isTrainerBattle && battleAction == BattleAction.Run)
+            {
+                ActionSelection();
+                yield break;
+            }
+            // Enemy turn as this runs every time the player does something that isn't attacking
+            var enemyMove = enemyUnit.Pokemon.GetRandomMove();
+            yield return RunMove(enemyUnit, playerUnit, enemyMove);
+
         }
+
         if (state != BattleState.BattleOver)
         {
 
@@ -677,7 +683,7 @@ public class BattleSystem : MonoBehaviour
                 StartCoroutine(SendNextTrainerPokemon());
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Z))
+        else if (Input.GetKeyDown(KeyCode.X))
         {
 
             // Same as no option
@@ -735,15 +741,19 @@ public class BattleSystem : MonoBehaviour
     {
         if (isTrainerBattle)
         {
-
             yield return dialogBox.TypeDialog("No! There's no running from a Trainer battle!");
-            ActionSelection();
+            while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
+                yield return null;
+
+            state = BattleState.RunningTurn;
         }
         else
         {
             if (originalPlayerSpeed >= originalEnemySpeed)
             {
                 yield return dialogBox.TypeDialog("Ran away safely!");
+                while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
+                    yield return null;
                 BattleOver(true);
             }
             else
@@ -755,11 +765,15 @@ public class BattleSystem : MonoBehaviour
                 if (originalPlayerSpeed * 128 / originalEnemySpeed + 30 * runAttempts >= r)
                 {
                     yield return dialogBox.TypeDialog("Ran away safely!");
+                    while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
+                        yield return null;
                     BattleOver(true);
                 }
                 else
                 {
                     yield return dialogBox.TypeDialog("Can't escape!");
+                    while (!Input.GetKeyDown(KeyCode.X) && !Input.GetKeyDown(KeyCode.Z))
+                        yield return null;
                     state = BattleState.RunningTurn;
                 }
             }
