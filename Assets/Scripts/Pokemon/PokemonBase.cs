@@ -23,6 +23,7 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int spAttack;
     [SerializeField] int spDefense;
     [SerializeField] int speed;
+    [SerializeField] int catchRate;
 
     [SerializeField] List<LearnableMoves> learnableMoves;
 
@@ -90,6 +91,11 @@ public class PokemonBase : ScriptableObject
     {
         get { return learnableMoves; }
     }
+
+    public int CatchRate
+    {
+        get { return catchRate; }
+    }
 }
 
 [System.Serializable]
@@ -134,7 +140,8 @@ public enum PokemonType
     Fairy
 }
 
-public enum Stat {
+public enum Stat
+{
 
     Attack,
     Defense,
@@ -182,7 +189,7 @@ public class TypeChart
 
         int row = (int)attackType - 1;
         int col = (int)defenseType - 1;
-        
+
         return chart[row][col];
     }
 }
