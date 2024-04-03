@@ -40,6 +40,7 @@ public class Pokemon
     public List<Move> Moves { get; set; }
     public Move CurrentMove { get; set; }
     public int HP { get; set; }
+    public int Exp;
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoosts { get; private set; }
     public Queue<string> StatusChanges { get; private set; }
@@ -63,6 +64,7 @@ public class Pokemon
                 break;
         }
 
+        Exp = Base.GetExpForLevel(Level);
         CalculateStats();
 
 

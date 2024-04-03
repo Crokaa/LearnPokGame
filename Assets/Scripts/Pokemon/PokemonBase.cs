@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,9 +24,46 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int spAttack;
     [SerializeField] int spDefense;
     [SerializeField] int speed;
+    [SerializeField] int expYield;
     [SerializeField] int catchRate;
 
     [SerializeField] List<LearnableMoves> learnableMoves;
+    [SerializeField] GrowthRate growthRate;
+
+    public int GetExpForLevel(int level)
+    {
+        switch (growthRate)
+        {
+
+            case GrowthRate.Fast:
+                return 4 * level * level * level / 5;
+            case GrowthRate.MediumFast:
+                return level * level * level;
+            case GrowthRate.MediumSlow:
+                return (6 / 5 * level * level * level) - (15 * level * level) + 100 * level - 140;
+            case GrowthRate.Slow:
+                return 5 * level * level * level / 4;
+            case GrowthRate.Erratic:
+                if (level < 50)
+                    return level * level * level * (100 - level) / 50;
+                else if (50 <= level && level < 68)
+                    return level * level * level * (150 - level) / 100;
+                else if (68 <= level && level < 98)
+                    return level * level * level * Mathf.FloorToInt(1911 - 10 * level) / 500;
+                else
+                    return level * level * level * (160 - level) / 100;
+            default: //Flunctuating
+                if (level < 15)
+                    return level * level * level * (Mathf.FloorToInt((level + 1) / 3) + 24) / 50;
+                else if(15 <= level && level < 36)
+                    return level * level * level * (level + 14) / 50;
+                else
+                    return level * level * level * (Mathf.FloorToInt(level / 2) + 32) / 50;
+
+
+        }
+
+    }
 
     public string Name
     {
@@ -87,9 +125,19 @@ public class PokemonBase : ScriptableObject
         get { return speed; }
     }
 
+    public int ExpYield
+    {
+        get { return expYield; }
+    }
+
     public List<LearnableMoves> LearnableMoves
     {
         get { return learnableMoves; }
+    }
+
+    public GrowthRate GrowthRate
+    {
+        get { return growthRate; }
     }
 
     public int CatchRate
@@ -152,6 +200,16 @@ public enum Stat
     // not stats, used to boost MoveAccuracy
     Accuracy,
     Evasion
+}
+
+public enum GrowthRate
+{
+    Erratic,
+    Fast,
+    MediumFast,
+    MediumSlow,
+    Slow,
+    Flunctuating
 }
 
 public class TypeChart

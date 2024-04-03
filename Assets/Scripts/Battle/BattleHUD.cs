@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,7 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] Color frzColor;
     [SerializeField] Color brnColor;
     [SerializeField] Color parColor;
+    [SerializeField] GameObject expBar;
 
 
     Pokemon pokemon;
@@ -29,6 +31,7 @@ public class BattleHUD : MonoBehaviour
         nameText.text = pokemon.Base.Name;
         levelText.text = "Lvl " + pokemon.Level;
         hpBar.SetHP((float)pokemon.HP / pokemon.MaxHp);
+        SetExp();
 
         statusColors = new Dictionary<ConditionID, Color>() {
 
@@ -62,5 +65,32 @@ public class BattleHUD : MonoBehaviour
             yield return hpBar.SetHPSmooth((float)pokemon.HP / pokemon.MaxHp);
             pokemon.HpChanged = false;
         }
+    }
+
+    public void SetExp()
+    {
+
+        if (expBar == null) return;
+
+        float normalizedExp = GetNormalizedExp();
+        expBar.transform.localScale = new Vector3(normalizedExp, 1, 1);
+    }
+
+    public IEnumerator SetExpSmooth()
+    {
+
+        if (expBar == null) yield break;
+
+        float normalizedExp = GetNormalizedExp();
+        yield return expBar.transform.DOScaleX(normalizedExp, 1.5f).WaitForCompletion();
+    }
+
+    float GetNormalizedExp()
+    {
+
+        int currentLevelExp = pokemon.Base.GetExpForLevel(pokemon.Level);
+        int nextLevelExp = pokemon.Base.GetExpForLevel(pokemon.Level + 1);
+
+        return Mathf.Clamp01((float) (pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp));
     }
 }
