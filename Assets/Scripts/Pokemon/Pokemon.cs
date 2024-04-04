@@ -60,7 +60,7 @@ public class Pokemon
             if (move.Level <= Level)
                 Moves.Add(new Move(move.MoveBase));
 
-            if (Moves.Count >= 4)
+            if (Moves.Count >= PokemonBase.MaxNumMoves)
                 break;
         }
 
@@ -280,6 +280,17 @@ public class Pokemon
 
         UpdateHP(damage);
         return damageDetails;
+    }
+
+    public List<LearnableMove> GetLearnableMovesAtCurrentLevel() {
+
+        return Base.LearnableMoves.Where(x => x.Level == level).ToList();
+
+    }  
+
+    public void LearnMove(LearnableMove newMove)
+    {
+        Moves.Add(new Move(newMove.MoveBase));
     }
 
     public void UpdateHP(int damage)

@@ -354,9 +354,32 @@ public class BattleSystem : MonoBehaviour
             {
                 playerUnit.Hud.SetLevel();
                 yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} grew to LV. {playerUnit.Pokemon.Level}!");
-                while(!Input.GetKeyDown(KeyCode.Z) && !Input.GetKeyDown(KeyCode.X))
-                  yield return null;
+                while (!Input.GetKeyDown(KeyCode.Z) && !Input.GetKeyDown(KeyCode.X))
+                    yield return null;
+
+                var learnableMoves = playerUnit.Pokemon.GetLearnableMovesAtCurrentLevel();
+
+                foreach (var newMove in learnableMoves)
+                {
+                    if (playerUnit.Pokemon.Moves.Count < PokemonBase.MaxNumMoves)
+                    {
+
+                        playerUnit.Pokemon.LearnMove(newMove);
+                        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} learned {newMove.MoveBase.Name}!");
+
+                        /* I will add this if I need to
+                        while (!Input.GetKeyDown(KeyCode.Z) && !Input.GetKeyDown(KeyCode.X))
+                            yield return null;
+                        */
+                    }
+                    else
+                    {
+                        //TODO forget move and add new one
+                    }
+                }
+
                 yield return playerUnit.Hud.SetExpSmooth(true);
+                dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
             }
             yield return new WaitForSeconds(1f);
         }

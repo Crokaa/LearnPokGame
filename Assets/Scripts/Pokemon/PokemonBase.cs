@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Pokemon/Create new Pokemon")]
@@ -27,8 +28,10 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int expYield;
     [SerializeField] int catchRate;
 
-    [SerializeField] List<LearnableMoves> learnableMoves;
+    [SerializeField] List<LearnableMove> learnableMoves;
     [SerializeField] GrowthRate growthRate;
+
+    public static int MaxNumMoves { get; set; } = 4;
 
     public int GetExpForLevel(int level)
     {
@@ -55,7 +58,7 @@ public class PokemonBase : ScriptableObject
             default: //Flunctuating
                 if (level < 15)
                     return level * level * level * (Mathf.FloorToInt((level + 1) / 3) + 24) / 50;
-                else if(15 <= level && level < 36)
+                else if (15 <= level && level < 36)
                     return level * level * level * (level + 14) / 50;
                 else
                     return level * level * level * (Mathf.FloorToInt(level / 2) + 32) / 50;
@@ -130,7 +133,7 @@ public class PokemonBase : ScriptableObject
         get { return expYield; }
     }
 
-    public List<LearnableMoves> LearnableMoves
+    public List<LearnableMove> LearnableMoves
     {
         get { return learnableMoves; }
     }
@@ -147,7 +150,7 @@ public class PokemonBase : ScriptableObject
 }
 
 [System.Serializable]
-public class LearnableMoves
+public class LearnableMove
 {
 
     [SerializeField] MoveBase moveBase;
