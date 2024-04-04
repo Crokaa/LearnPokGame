@@ -314,7 +314,10 @@ public class BattleSystem : MonoBehaviour
                 }
             }
 
-            yield return CheckIfDead(targetUnit);
+            if (targetUnit.Pokemon.HP <= 0)
+            {
+                yield return CheckIfDead(targetUnit);
+            }
         }
         else
             yield return dialogBox.TypeDialog($"{sourceUnit.Pokemon.Base.Name}'s attack missed.");
@@ -323,15 +326,44 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator CheckIfDead(BattleUnit unit)
     {
+        yield return dialogBox.TypeDialog($"{unit.Pokemon.Base.Name} fainted!");
+        unit.PlayFaintAnimation();
 
-        if (unit.Pokemon.HP <= 0)
+        yield return new WaitForSeconds(2f);
+
+
+        if (!unit.IsPlayerUnit)
         {
-            yield return dialogBox.TypeDialog($"{unit.Pokemon.Base.Name} fainted!");
-            unit.PlayFaintAnimation();
 
-            yield return new WaitForSeconds(2f);
-            CheckBattleOver(unit);
+            //Exp Gain
+            int expYield = unit.Pokemon.Base.ExpYield;
+            int enemyLevel = unit.Pokemon.Level;
+            float trainerBonus = isTrainerBattle ? 1.5f : 1.0f;
+
+            //later on add the rest of the variables
+            int expGain = Mathf.FloorToInt(expYield * enemyLevel * trainerBonus / 5);
+
+            playerUnit.Pokemon.Exp += expGain;
+
+            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} gained {expGain} EXP. Points!");
+            yield return playerUnit.Hud.SetExpSmooth();
+
+            //Check level Up
+
+            while (playerUnit.Pokemon.CheckForLevelUp())
+            {
+                playerUnit.Hud.SetLevel();
+                yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} grew to LV. {playerUnit.Pokemon.Level}!");
+                while(!Input.GetKeyDown(KeyCode.Z) && !Input.GetKeyDown(KeyCode.X))
+                  yield return null;
+                yield return playerUnit.Hud.SetExpSmooth(true);
+            }
+            yield return new WaitForSeconds(1f);
         }
+
+        CheckBattleOver(unit);
+
+
 
     }
 
@@ -348,9 +380,13 @@ public class BattleSystem : MonoBehaviour
         yield return ShowStatusChanges(sourceUnit.Pokemon);
         yield return sourceUnit.Hud.UpdateHP();
 
-        yield return CheckIfDead(sourceUnit);
+        if (sourceUnit.Pokemon.HP <= 0)
+        {
 
-        yield return new WaitUntil(() => state == BattleState.RunningTurn);
+            yield return CheckIfDead(sourceUnit);
+
+            yield return new WaitUntil(() => state == BattleState.RunningTurn);
+        }
     }
 
     IEnumerator RunMoveEffects(Pokemon source, Pokemon target, MoveTarget moveTarget, MoveEffects effects)
@@ -866,7 +902,7 @@ public class BattleSystem : MonoBehaviour
     int TryToCatchPokemon(Pokemon pokemon)
     {
 
-        float a = (3 * pokemon.MaxHp - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHp) ;
+        float a = (3 * pokemon.MaxHp - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHp);
 
         if (a >= 255)
             return 4;
