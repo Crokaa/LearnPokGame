@@ -326,35 +326,44 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator CheckIfDead(BattleUnit unit)
     {
-            yield return dialogBox.TypeDialog($"{unit.Pokemon.Base.Name} fainted!");
-            unit.PlayFaintAnimation();
+        yield return dialogBox.TypeDialog($"{unit.Pokemon.Base.Name} fainted!");
+        unit.PlayFaintAnimation();
 
-            yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2f);
 
 
-            if(!unit.IsPlayerUnit){
+        if (!unit.IsPlayerUnit)
+        {
 
-                //Exp Gain
-                int expYield = unit.Pokemon.Base.ExpYield;
-                int enemyLevel = unit.Pokemon.Level;
-                float trainerBonus = isTrainerBattle? 1.5f : 1.0f;
+            //Exp Gain
+            int expYield = unit.Pokemon.Base.ExpYield;
+            int enemyLevel = unit.Pokemon.Level;
+            float trainerBonus = isTrainerBattle ? 1.5f : 1.0f;
 
-                //later on add the rest of the variables
-                int expGain = Mathf.FloorToInt(expYield * enemyLevel * trainerBonus / 5 );
+            //later on add the rest of the variables
+            int expGain = Mathf.FloorToInt(expYield * enemyLevel * trainerBonus / 5);
 
-                playerUnit.Pokemon.Exp += expGain;
+            playerUnit.Pokemon.Exp += expGain;
 
-                yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} gained {expGain} EXP. Points!");
-                yield return playerUnit.Hud.SetExpSmooth();
+            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} gained {expGain} EXP. Points!");
+            yield return playerUnit.Hud.SetExpSmooth();
 
-                //Check level Up
+            //Check level Up
 
-                yield return new WaitForSeconds(1f);
+            while (playerUnit.Pokemon.CheckForLevelUp())
+            {
+                playerUnit.Hud.SetLevel();
+                yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} grew to LV. {playerUnit.Pokemon.Level}!");
+                while(!Input.GetKeyDown(KeyCode.Z) && !Input.GetKeyDown(KeyCode.X))
+                  yield return null;
+                yield return playerUnit.Hud.SetExpSmooth(true);
             }
+            yield return new WaitForSeconds(1f);
+        }
 
-            CheckBattleOver(unit);
+        CheckBattleOver(unit);
 
-            
+
 
     }
 
