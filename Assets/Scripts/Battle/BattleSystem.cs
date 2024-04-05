@@ -7,8 +7,9 @@ using System.Resources;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
 
-public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse }
+public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse, MoveToForget }
 public enum BattleAction { Move, SwitchPokemon, Items, Run }
 
 public class BattleSystem : MonoBehaviour
@@ -20,6 +21,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] Image playerImage;
     [SerializeField] Image trainerImage;
     [SerializeField] GameObject pokeballSprite;
+    [SerializeField] MoveSelectionUI moveSelectionUI;
     public event Action<bool> OnBattleOver;
 
     BattleState state;
@@ -27,12 +29,14 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
     int currentMember;
+    int currentToForget;
     bool aboutToUseChoise = true;
 
     // These 3 are used for running. Even after speed drops the formula uses the original speed.
     int originalPlayerSpeed;
     int originalEnemySpeed;
     int runAttempts;
+    MoveBase moveToLearn;
 
     PokemonParty playerParty;
     PokemonParty trainerParty;
@@ -374,7 +378,11 @@ public class BattleSystem : MonoBehaviour
                     }
                     else
                     {
-                        //TODO forget move and add new one
+                        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} is trying to learn {newMove.MoveBase.Name}.");
+                        yield return dialogBox.TypeDialog($"But it cannot learn more than {PokemonBase.MaxNumMoves} moves.");
+                        yield return ChooseMoveToForget(playerUnit.Pokemon, newMove.MoveBase);
+                        yield return new WaitUntil(() => state != BattleState.MoveToForget);
+                        yield return new WaitForSeconds(2f);
                     }
                 }
 
@@ -386,8 +394,17 @@ public class BattleSystem : MonoBehaviour
 
         CheckBattleOver(unit);
 
+    }
 
+    IEnumerator ChooseMoveToForget(Pokemon pokemon, MoveBase newMove)
+    {
+        state = BattleState.Busy;
+        yield return dialogBox.TypeDialog("Choose a move you want to forget");
+        moveSelectionUI.gameObject.SetActive(true);
+        moveSelectionUI.SetMoveData(pokemon.Moves.Select(x => x.Base).ToList(), newMove);
+        moveToLearn = newMove;
 
+        state = BattleState.MoveToForget;
     }
 
     IEnumerator RunAfterTurn(BattleUnit sourceUnit)
@@ -549,9 +566,38 @@ public class BattleSystem : MonoBehaviour
         {
             HandleAboutToUse();
         }
+        else if (state == BattleState.MoveToForget)
+        {
+            Action<int> OnMoveSelected = (moveIndex) =>
+            {
+                moveSelectionUI.gameObject.SetActive(false);
+                if (moveIndex == PokemonBase.MaxNumMoves)
+                {
+                    StartCoroutine(dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} did not learn {moveToLearn.Name}"));
+                    state = BattleState.RunningTurn;
+                }
+                else
+                {
+                    var selectedMove = playerUnit.Pokemon.Moves[moveIndex].Base;
+                    StartCoroutine(PrintMoveLearned(selectedMove, moveToLearn));
+                    playerUnit.Pokemon.Moves[moveIndex] = new Move(moveToLearn);
+                }
+                moveToLearn = null;
 
-
+            };
+            moveSelectionUI.HandleMoveSelection(OnMoveSelected);
+        }
     }
+
+    private IEnumerator PrintMoveLearned(MoveBase selectedMove, MoveBase moveToLearn)
+    {
+        yield return dialogBox.TypeDialog("One...two...and...ta-da!");
+        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} forgot {selectedMove.Name}... and it learned {moveToLearn.Name} instead!");
+
+        //used here so it won't change before I want to (it could be implemented differently, later I can change it)
+        state = BattleState.RunningTurn;
+    }
+
     void HandleActionSelection()
     {
 
@@ -592,7 +638,7 @@ public class BattleSystem : MonoBehaviour
             {
 
                 //Bag
-                StartCoroutine((RunTurns(BattleAction.Items)));
+                StartCoroutine(RunTurns(BattleAction.Items));
             }
             else if (currentAction == 2)
             {
@@ -759,7 +805,6 @@ public class BattleSystem : MonoBehaviour
             StartCoroutine(SendNextTrainerPokemon());
         }
     }
-
 
     IEnumerator SwitchPokemon(Pokemon newPokemon)
     {

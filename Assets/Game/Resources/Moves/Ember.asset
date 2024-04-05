@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Ember
   m_EditorClassIdentifier: 
   name: Ember
-  description: 
+  description: The target is attacked with small flames. This may also leave the
+    target with a burn.
   type: 2
   power: 40
   accuracy: 100

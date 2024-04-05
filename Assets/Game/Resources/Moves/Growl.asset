@@ -13,14 +13,20 @@ MonoBehaviour:
   m_Name: Growl
   m_EditorClassIdentifier: 
   name: Growl
-  description: 
+  description: "The user growls in an endearing way, making opposing Pok\xE9mon less
+    wary. This lowers their Attack stats."
   type: 1
   power: 0
   accuracy: 100
+  alwaysHits: 0
   pp: 40
+  priority: 0
   category: 2
   effects:
     boosts:
     - stat: 0
       boost: -1
+    status: 0
+    volatileStatus: 0
   target: 0
+  secEffects: []
