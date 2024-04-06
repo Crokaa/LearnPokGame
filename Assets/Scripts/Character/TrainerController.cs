@@ -67,6 +67,8 @@ public class TrainerController : MonoBehaviour, Interactable
 
         yield return character.Move(moveVec);
 
+        player.LooksTowards(transform.position);
+        
         StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () =>
         {
             GameController.Instance.StartTrainerBattle(this);

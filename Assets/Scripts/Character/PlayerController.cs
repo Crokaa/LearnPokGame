@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
             if (UnityEngine.Random.Range(1, 101) <= 10)
             {
                 character.Animator.IsMoving = false;
-                OnEncountered?.Invoke();
+                OnEncountered();
             }
 
         }
@@ -93,5 +93,10 @@ public class PlayerController : MonoBehaviour
             character.Animator.IsMoving = false;
             OnEnterTrainerView?.Invoke(collider);
         }
+    }
+
+    internal void LooksTowards(Vector3 position)
+    {
+        character.LookTowards(position);
     }
 }
