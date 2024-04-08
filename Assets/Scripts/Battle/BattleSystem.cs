@@ -29,7 +29,6 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
     int currentMember;
-    int currentToForget;
     bool aboutToUseChoise = true;
 
     // These 3 are used for running. Even after speed drops the formula uses the original speed.
@@ -44,6 +43,7 @@ public class BattleSystem : MonoBehaviour
     bool isTrainerBattle;
     PlayerController player;
     TrainerController trainer;
+    Weather currWeather;
 
     public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon)
     {
@@ -462,7 +462,11 @@ public class BattleSystem : MonoBehaviour
         if (move.Base.AlwaysHits)
             return true;
 
+
         float moveAccuracy = move.Base.Accuracy;
+
+        if (currWeather != null)
+            moveAccuracy = currWeather.BeforeMove(move);
 
         int accuracy = source.StatBoosts[Stat.Accuracy];
         int evasion = target.StatBoosts[Stat.Evasion];
@@ -479,6 +483,8 @@ public class BattleSystem : MonoBehaviour
             moveAccuracy /= accBoost[evasion];
         else
             moveAccuracy *= accBoost[-evasion];
+
+        
 
         return UnityEngine.Random.Range(1, 101) <= moveAccuracy;
     }
