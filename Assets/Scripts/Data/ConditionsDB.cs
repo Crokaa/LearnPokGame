@@ -6,10 +6,12 @@ using UnityEngine;
 public class ConditionsDB
 {
 
-    public static void Init() {
+    public static void Init()
+    {
 
-        foreach (var kvp in Conditions){
-            
+        foreach (var kvp in Conditions)
+        {
+
             var conditionID = kvp.Key;
             var condition = kvp.Value;
 
@@ -151,7 +153,7 @@ public class ConditionsDB
 
                     if(Random.Range(1,4) == 1)
                         return true;
-                    
+
                     float a = (2 * pokemon.Level + 10) / 250f;
                     int damage = Mathf.FloorToInt(a * 40 * ((float)pokemon.Attack / pokemon.Defense) + 2);
 
@@ -164,16 +166,17 @@ public class ConditionsDB
 
     };
 
-    public static float GetStatusBonus(Condition condition) {
+    public static float GetStatusBonus(Condition condition)
+    {
 
         if (condition == null)
             return 1f;
         else if (condition.Id == ConditionID.frz || condition.Id == ConditionID.slp)
             return 2f;
-        else if(condition.Id == ConditionID.brn || condition.Id == ConditionID.par || condition.Id == ConditionID.psn)
+        else if (condition.Id == ConditionID.brn || condition.Id == ConditionID.par || condition.Id == ConditionID.psn)
             return 1.5f;
         else
-        return 1f;
+            return 1f;
     }
 
 }

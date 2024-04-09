@@ -465,8 +465,8 @@ public class BattleSystem : MonoBehaviour
 
         float moveAccuracy = move.Base.Accuracy;
 
-        if (currWeather != null)
-            moveAccuracy = currWeather.BeforeMove(move);
+        if (currWeather.Id == WeatherID.fog)
+            moveAccuracy = move.Base.Accuracy * 3/5f;
 
         int accuracy = source.StatBoosts[Stat.Accuracy];
         int evasion = target.StatBoosts[Stat.Evasion];
