@@ -8,6 +8,17 @@ using UnityEngine;
 public class WeatherDB : MonoBehaviour
 {
 
+    internal static void Init()
+    {
+        foreach (var kvp in Weathers) {
+
+            var weatherID = kvp.Key;
+            var weather = kvp.Value;
+
+            weather.Id = weatherID;
+        }
+    }
+
     public static Dictionary<WeatherID, Weather> Weathers { get; set; } = new Dictionary<WeatherID, Weather>{
 
         {
@@ -144,6 +155,7 @@ public class WeatherDB : MonoBehaviour
             }
         },
      };
+
 }
 
 

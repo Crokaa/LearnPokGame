@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum GameState { FreeRoam, Battle, Dialog, Cutscene }
@@ -12,6 +13,9 @@ public class GameController : MonoBehaviour
 
     GameState state;
     TrainerController trainer;
+    Weather currWeatherOutside;
+    //this will be removed later, I'm just using it for testing
+    float time = 0;
 
     public static GameController Instance { get; private set; }
 
@@ -50,6 +54,7 @@ public class GameController : MonoBehaviour
     {
         Instance = this;
         ConditionsDB.Init();
+        WeatherDB.Init();
     }
 
     void StartBattle()
@@ -63,6 +68,7 @@ public class GameController : MonoBehaviour
 
         var wildPokemonCopy = new Pokemon(wildPokemon.Base, wildPokemon.Level);
 
+        // I will pass the weather here
         battleSystem.StartBattle(playerParty, wildPokemonCopy);
     }
 
@@ -77,12 +83,14 @@ public class GameController : MonoBehaviour
         var playerParty = playerController.GetComponent<PokemonParty>();
         var trainerParty = trainer.GetComponent<PokemonParty>();
 
+        // I will pass the weather here
         battleSystem.StartTrainerBattle(playerParty, trainerParty);
     }
 
     void EndBattle(bool won)
     {
-        if(trainer != null && won) {
+        if (trainer != null && won)
+        {
             trainer.BattleLost();
             trainer = null;
         }
@@ -95,6 +103,14 @@ public class GameController : MonoBehaviour
     private void Update()
     {
 
+        time += Time.deltaTime;
+
+        if (time > 10)
+        {
+            currWeatherOutside = WeatherDB.Weathers.ElementAt(Random.Range(0, WeatherDB.Weathers.Count)).Value;
+            time = 0;
+            Debug.Log("Weather changed to " + currWeatherOutside.Id);
+        }
         if (state == GameState.FreeRoam)
         {
             playerController.HandleUpdate();
