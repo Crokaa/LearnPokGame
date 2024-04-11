@@ -219,11 +219,12 @@ public class Pokemon
     public bool CheckForLevelUp()
     {
 
-        if(Exp > Base.GetExpForLevel(level + 1)){
+        if (Exp > Base.GetExpForLevel(level + 1))
+        {
             level++;
             return true;
         }
-        
+
         return false;
     }
 
@@ -254,18 +255,33 @@ public class Pokemon
 
     public int MaxHp { get; set; }
 
-    public DamageDetails TakeDamage(Move move, Pokemon attacker)
+    public DamageDetails TakeDamage(Move move, Pokemon attacker, Weather weather)
     {
 
         float critical = 1f;
         if (UnityEngine.Random.value * 100f <= 4.17)
             critical = 1.5f;
 
+
+        bool showWeatherEffectOnMove = false;
         float effectiveness = TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type2);
+        float effectivenessApplied = effectiveness;
+
+        if (weather?.ChangeEffectiveness != null)
+        {
+            effectivenessApplied *= weather.ChangeEffectiveness(move, this);
+            if(effectivenessApplied < effectiveness)
+                showWeatherEffectOnMove = true;
+        }
+        else if(weather?.DuringMove != null)
+        {
+            effectivenessApplied *= weather.DuringMove(move);
+        }
 
         var damageDetails = new DamageDetails()
         {
             Effectiveness = effectiveness,
+            ShowWeatherEffectOnMove = showWeatherEffectOnMove,
             Critical = critical,
             Fainted = false
         };
@@ -273,7 +289,7 @@ public class Pokemon
         float attack = move.Base.Category == MoveCategory.Special ? attacker.SpAttack : attacker.Attack;
         float defense = move.Base.Category == MoveCategory.Special ? SpDefense : Defense;
 
-        float modifiers = UnityEngine.Random.Range(0.85f, 1f) * effectiveness * critical;
+        float modifiers = UnityEngine.Random.Range(0.85f, 1f) * effectivenessApplied * critical;
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);
@@ -282,11 +298,12 @@ public class Pokemon
         return damageDetails;
     }
 
-    public List<LearnableMove> GetLearnableMovesAtCurrentLevel() {
+    public List<LearnableMove> GetLearnableMovesAtCurrentLevel()
+    {
 
         return Base.LearnableMoves.Where(x => x.Level == level).ToList();
 
-    }  
+    }
 
     public void LearnMove(LearnableMove newMove)
     {
@@ -316,4 +333,5 @@ public class DamageDetails
     public bool Fainted { get; set; }
     public float Critical { get; set; }
     public float Effectiveness { get; set; }
+    public bool ShowWeatherEffectOnMove { get; set; }
 }

@@ -14,7 +14,7 @@ public class ConditionsDB
 
             var conditionID = kvp.Key;
             var condition = kvp.Value;
-
+            
             condition.Id = conditionID;
         }
 

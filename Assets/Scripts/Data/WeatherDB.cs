@@ -26,8 +26,11 @@ public class WeatherDB : MonoBehaviour
             new Weather ()
                 {
                     Name = "Harsh sunlight",
+                    NaturalStartMessage = "The sunlight is harsh!",
                     StartMessage = "The sunlight turned harsh!",
-                    RoundMessage = "The sunlight is harsh!",
+                    //This might be deleted or not depending on how the game goes
+                    RoundMessage = "The sunlight is strong.",
+                    LeaveMessage = "The harsh sunlight faded.",
                     DuringMove = (Move move) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 1.5f ;
@@ -44,8 +47,11 @@ public class WeatherDB : MonoBehaviour
             new Weather ()
                 {
                     Name = "Rain",
+                    NaturalStartMessage = "It's raining!",
                     StartMessage = "It started to rain!",
-                    RoundMessage = "It's raining!",
+                    //This might be deleted or not depending on how the game goes
+                    RoundMessage = "Rain continues to fall.",
+                    LeaveMessage = "The rain stopped.",
                     DuringMove = (Move move) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 0.5f ;
@@ -62,7 +68,9 @@ public class WeatherDB : MonoBehaviour
             new Weather ()
                 {
                     Name = "Sandstorm",
+                    NaturalStartMessage = "The sandstorm is raging!",
                     StartMessage = "A sandstorm kicked up!",
+                    //This might be deleted or not depending on how the game goes
                     RoundMessage = "The sandstorm is raging!",
                     ResistOnWeather = (Pokemon pokemon) => {
                         if (pokemon.Base.Type1 == PokemonType.Rock || pokemon.Base.Type2 == PokemonType.Rock)
@@ -86,8 +94,10 @@ public class WeatherDB : MonoBehaviour
             new Weather ()
                 {
                     Name = "Hail",
+                    NaturalStartMessage = "It's hailing!",
                     StartMessage = "It started to hail!",
-                    RoundMessage = "It's hailing!",
+                    RoundMessage = "Hail continues to fall.",
+                    LeaveMessage = "The hail stopped.",
                     OnAfterTurn = (Pokemon pokemon) => {
 
                     var type1 = pokemon.Base.Type1;
@@ -113,11 +123,15 @@ public class WeatherDB : MonoBehaviour
                 {
                     Name = "Extremely Harsh Sunlight",
                     StartMessage = "The sunlight turned extremely harsh!",
-                    DuringMove = (Move move) => {
+                    PreventWeatherMessage = "The extremely harsh sunlight was not lessened at all!",
+                    MoveEffectivenessMessage = "The Water-type attack evaporated in the harsh sunlight!",
+                    LeaveMessage = "The harsh sunlight faded.",
+                    // I use this method because in take damage this applies an effectivenessChange that will show a message later
+                    ChangeEffectiveness = (Move move, Pokemon target) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 1.5f ;
                         else if (move.Base.Type == PokemonType.Water)
-                            return 0.0f; // this will need some change as it will show a message
+                            return 0.0f; 
 
                         return 1f;
                     }
@@ -129,11 +143,15 @@ public class WeatherDB : MonoBehaviour
                 {
                     Name = "Heavy Rain",
                     StartMessage = "A heavy rain began to fall!",
-                    DuringMove = (Move move) => {
+                    PreventWeatherMessage = "There is no relief from this heavy rain!",
+                    MoveEffectivenessMessage = "The Fire-type attack fizzled out in the heavy rain!",
+                    LeaveMessage = "The heavy rain has lifted!",
+                    // I use this method because in take damage this applies an effectivenessChange that will show a message later
+                    ChangeEffectiveness = (Move move, Pokemon target) => {
                         if (move.Base.Type == PokemonType.Water)
                             return 1.5f ;
                         else if (move.Base.Type == PokemonType.Fire)
-                            return 0.0f; // this will need some change as it will show a message
+                            return 0.0f;
 
                         return 1f;
                     }
@@ -145,9 +163,15 @@ public class WeatherDB : MonoBehaviour
                 {
                     Name = "Strong winds",
                     StartMessage = "Mysterious strong winds are protecting Flying-type Pokémon!",
-                    //this method will need a change for sure. I'll just leave it like this and remember to change it later on. 0.5f will be 1 and I'll receive the pokemon defending
-                    DuringMove = (Move move) => {
-                        if (move.Base.Type == PokemonType.Electric || move.Base.Type == PokemonType.Ice || move.Base.Type == PokemonType.Rock)
+                    PreventWeatherMessage = "The mysterious strong winds blow on regardless!",
+                    MoveEffectivenessMessage = "The mysterious strong winds weakened the attack!",
+                    LeaveMessage = "The mysterious strong winds have dissipated!",
+                    // This method makes sense here as the target needs to be a flying type.
+                    ChangeEffectiveness = (Move move, Pokemon target) => {
+
+                        var type1 = target.Base.Type1;
+                        var type2 = target.Base.Type2;
+                        if ((move.Base.Type == PokemonType.Electric || move.Base.Type == PokemonType.Ice || move.Base.Type == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))    
                             return 0.5f ;
 
                         return 1f;

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Linq;
 
-public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse, MoveToForget }
+public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse, MoveToForget, ShowDialog }
 public enum BattleAction { Move, SwitchPokemon, Items, Run }
 
 public class BattleSystem : MonoBehaviour
@@ -45,7 +45,7 @@ public class BattleSystem : MonoBehaviour
     TrainerController trainer;
     Weather currWeather;
 
-    public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon)
+    public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon, Weather outsideWeather)
     {
         this.playerParty = playerParty;
         this.wildPokemon = wildPokemon;
@@ -54,11 +54,13 @@ public class BattleSystem : MonoBehaviour
         currentMember = 0;
         player = playerParty.GetComponent<PlayerController>();
         isTrainerBattle = false;
+        Debug.Log(outsideWeather);
+        currWeather = outsideWeather;
 
         StartCoroutine(SetupBattle());
     }
 
-    public void StartTrainerBattle(PokemonParty playerParty, PokemonParty trainerParty)
+    public void StartTrainerBattle(PokemonParty playerParty, PokemonParty trainerParty, Weather outsideWeather)
     {
         this.playerParty = playerParty;
         this.trainerParty = trainerParty;
@@ -68,6 +70,7 @@ public class BattleSystem : MonoBehaviour
         currentAction = 0;
         currentMove = 0;
         currentMember = 0;
+        currWeather = outsideWeather;
 
         StartCoroutine(SetupBattle());
     }
@@ -123,6 +126,9 @@ public class BattleSystem : MonoBehaviour
             yield return dialogBox.TypeDialog($"Go {playerPokemon.Base.Name}!");
         }
 
+        if (currWeather?.NaturalStartMessage is not null)
+            yield return dialogBox.TypeDialog(currWeather.NaturalStartMessage);
+
         dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
         partyScreen.Init();
         ActionSelection();
@@ -176,8 +182,8 @@ public class BattleSystem : MonoBehaviour
     {
 
         state = BattleState.RunningTurn;
-        BattleUnit fastestUnit = null;
-        BattleUnit slowestUnit = null;
+        BattleUnit fastestUnit;
+        BattleUnit slowestUnit;
 
         if (battleAction == BattleAction.Move)
         {
@@ -301,9 +307,9 @@ public class BattleSystem : MonoBehaviour
             else
             {
                 targetUnit.PlayHitAnimation();
-                var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon);
+                var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, currWeather);
                 yield return targetUnit.Hud.UpdateHP();
-                yield return ShowDamageDetails(damageDetails);
+                yield return ShowDamageDetails(damageDetails, targetUnit.Pokemon);
             }
 
             if (move.Base.SecEffects is not null && move.Base.SecEffects.Count > 0 && targetUnit.Pokemon.HP > 0)
@@ -381,7 +387,7 @@ public class BattleSystem : MonoBehaviour
                         yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} is trying to learn {newMove.MoveBase.Name}.");
                         yield return dialogBox.TypeDialog($"But it cannot learn more than {PokemonBase.MaxNumMoves} moves.");
                         yield return ChooseMoveToForget(playerUnit.Pokemon, newMove.MoveBase);
-                        yield return new WaitUntil(() => state != BattleState.MoveToForget);
+                        yield return new WaitUntil(() => state == BattleState.RunningTurn);
                         yield return new WaitForSeconds(2f);
                     }
                 }
@@ -415,7 +421,7 @@ public class BattleSystem : MonoBehaviour
 
         // Case where Pokemon dies due to Status and we need to wait until the player switches
         yield return new WaitUntil(() => state == BattleState.RunningTurn);
-
+        
         sourceUnit.Pokemon.OnAfterTurn();
         yield return ShowStatusChanges(sourceUnit.Pokemon);
         yield return sourceUnit.Hud.UpdateHP();
@@ -465,8 +471,8 @@ public class BattleSystem : MonoBehaviour
 
         float moveAccuracy = move.Base.Accuracy;
 
-        if (currWeather.Id == WeatherID.fog)
-            moveAccuracy = move.Base.Accuracy * 3/5f;
+        if (currWeather != null && currWeather.Id == WeatherID.fog)
+            moveAccuracy = move.Base.Accuracy * 3 / 5f;
 
         int accuracy = source.StatBoosts[Stat.Accuracy];
         int evasion = target.StatBoosts[Stat.Evasion];
@@ -484,7 +490,7 @@ public class BattleSystem : MonoBehaviour
         else
             moveAccuracy *= accBoost[-evasion];
 
-        
+
 
         return UnityEngine.Random.Range(1, 101) <= moveAccuracy;
     }
@@ -541,16 +547,25 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.RunningTurn;
     }
 
-    IEnumerator ShowDamageDetails(DamageDetails damageDetails)
+    IEnumerator ShowDamageDetails(DamageDetails damageDetails, Pokemon target)
     {
 
         if (damageDetails.Critical > 1f)
             yield return dialogBox.TypeDialog("A critical hit!");
 
-        if (damageDetails.Effectiveness > 1f)
-            yield return dialogBox.TypeDialog("It's super effective!");
-        else if (damageDetails.Effectiveness < 1f)
-            yield return dialogBox.TypeDialog("It's not very effective...");
+        if (damageDetails.ShowWeatherEffectOnMove)
+        {
+            yield return dialogBox.TypeDialog(currWeather.MoveEffectivenessMessage);
+        }
+        else
+        {
+            if (damageDetails.Effectiveness > 1f)
+                yield return dialogBox.TypeDialog("It's super effective!");
+            else if (damageDetails.Effectiveness < 1f)
+                yield return dialogBox.TypeDialog("It's not very effective...");
+            else if(damageDetails.Effectiveness == 0)
+                yield return dialogBox.TypeDialog("It doesn't affect " + target.Base.Name);
+        }   
     }
 
     public void HandleUpdate()
@@ -597,8 +612,13 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator PrintMoveLearned(MoveBase selectedMove, MoveBase moveToLearn)
     {
+        /*This state is used because I will show some dialog and if my state stays MoveToForget it will keep running the handle move selection
+        ruining the whole execution of forgetting an old move and learning a new one. Could be changed in the future*/
+        state = BattleState.ShowDialog;
+
         yield return dialogBox.TypeDialog("One...two...and...ta-da!");
-        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} forgot {selectedMove.Name}... and it learned {moveToLearn.Name} instead!");
+        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} forgot {selectedMove.Name}...");
+        yield return dialogBox.TypeDialog($"And it learned {moveToLearn.Name} instead!");
 
         //used here so it won't change before I want to (it could be implemented differently, later I can change it)
         state = BattleState.RunningTurn;

@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour
         var wildPokemonCopy = new Pokemon(wildPokemon.Base, wildPokemon.Level);
 
         // I will pass the weather here
-        battleSystem.StartBattle(playerParty, wildPokemonCopy);
+        battleSystem.StartBattle(playerParty, wildPokemonCopy, currWeatherOutside);
     }
 
     public void StartTrainerBattle(TrainerController trainer)
@@ -84,7 +84,7 @@ public class GameController : MonoBehaviour
         var trainerParty = trainer.GetComponent<PokemonParty>();
 
         // I will pass the weather here
-        battleSystem.StartTrainerBattle(playerParty, trainerParty);
+        battleSystem.StartTrainerBattle(playerParty, trainerParty, currWeatherOutside);
     }
 
     void EndBattle(bool won)
@@ -103,16 +103,17 @@ public class GameController : MonoBehaviour
     private void Update()
     {
 
-        time += Time.deltaTime;
-
-        if (time > 10)
-        {
-            currWeatherOutside = WeatherDB.Weathers.ElementAt(Random.Range(0, WeatherDB.Weathers.Count)).Value;
-            time = 0;
-            Debug.Log("Weather changed to " + currWeatherOutside.Id);
-        }
         if (state == GameState.FreeRoam)
         {
+            time += Time.deltaTime;
+
+            if (time > 10)
+            {
+                currWeatherOutside = WeatherDB.Weathers.ElementAt(Random.Range(0, WeatherDB.Weathers.Count)).Value;
+                time = 0;
+                Debug.Log("Weather changed to " + currWeatherOutside.Id);
+            }
+            
             playerController.HandleUpdate();
         }
         else if (state == GameState.Battle)
