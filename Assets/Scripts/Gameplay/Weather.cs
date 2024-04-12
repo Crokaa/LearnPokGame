@@ -17,6 +17,6 @@ public class Weather : MonoBehaviour
     public Func<Move, Pokemon, float> ChangeEffectiveness { get; set; }
     public Func<Move, float> DuringMove { get; set; }
     public Func<Pokemon, int> ResistOnWeather { get; set; }
-    public Action<Pokemon> OnAfterTurn { get; set; }
+    public Func<Pokemon, string> OnAfterTurn { get; set; }
 
 }

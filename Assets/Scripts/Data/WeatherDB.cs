@@ -10,7 +10,8 @@ public class WeatherDB : MonoBehaviour
 
     internal static void Init()
     {
-        foreach (var kvp in Weathers) {
+        foreach (var kvp in Weathers)
+        {
 
             var weatherID = kvp.Key;
             var weather = kvp.Value;
@@ -84,8 +85,13 @@ public class WeatherDB : MonoBehaviour
 
                         if (type1 != PokemonType.Ground && type1 != PokemonType.Rock && type1 != PokemonType.Steel
                         && type2 != PokemonType.Ground && type2 != PokemonType.Rock && type2 != PokemonType.Steel)
+                        {
                             pokemon.UpdateHP(pokemon.MaxHp / 16);
-                    }
+                            return $"{pokemon.Base.Name} is buffeted by the sandstorm!";
+
+                        }
+                    return null;
+                }
 
             }
         },
@@ -104,7 +110,11 @@ public class WeatherDB : MonoBehaviour
                     var type2 = pokemon.Base.Type2;
 
                         if (type1 != PokemonType.Ice || type2 != PokemonType.Ice)
+                        {
                             pokemon.UpdateHP(pokemon.MaxHp / 16);
+                            return $"{pokemon.Base.Name} is buffeted by the hail!";
+                        }
+                    return null;
                     }
 
             }
@@ -131,7 +141,7 @@ public class WeatherDB : MonoBehaviour
                         if (move.Base.Type == PokemonType.Fire)
                             return 1.5f ;
                         else if (move.Base.Type == PokemonType.Water)
-                            return 0.0f; 
+                            return 0.0f;
 
                         return 1f;
                     }
@@ -171,7 +181,7 @@ public class WeatherDB : MonoBehaviour
 
                         var type1 = target.Base.Type1;
                         var type2 = target.Base.Type2;
-                        if ((move.Base.Type == PokemonType.Electric || move.Base.Type == PokemonType.Ice || move.Base.Type == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))    
+                        if ((move.Base.Type == PokemonType.Electric || move.Base.Type == PokemonType.Ice || move.Base.Type == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))
                             return 0.5f ;
 
                         return 1f;

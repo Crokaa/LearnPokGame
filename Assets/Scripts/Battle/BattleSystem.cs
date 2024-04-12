@@ -187,6 +187,8 @@ public class BattleSystem : MonoBehaviour
 
         if (battleAction == BattleAction.Move)
         {
+
+            //Choose Move Phase
             playerUnit.Pokemon.CurrentMove = playerUnit.Pokemon.Moves[currentMove];
             enemyUnit.Pokemon.CurrentMove = enemyUnit.Pokemon.GetRandomMove();
 
@@ -206,6 +208,7 @@ public class BattleSystem : MonoBehaviour
 
             var slowestPokemon = slowestUnit.Pokemon;
 
+            //Execute Move Phase
             yield return RunMove(fastestUnit, slowestUnit, fastestUnit.Pokemon.CurrentMove);
 
             if (state == BattleState.BattleOver)
@@ -259,6 +262,8 @@ public class BattleSystem : MonoBehaviour
             yield return RunMove(enemyUnit, playerUnit, enemyMove);
 
         }
+
+        //After turn phase
 
         if (state != BattleState.BattleOver)
         {
