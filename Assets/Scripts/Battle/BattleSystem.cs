@@ -273,10 +273,59 @@ public class BattleSystem : MonoBehaviour
             fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
             slowestUnit = playerGoesFirst ? enemyUnit : playerUnit;
 
+            yield return WeatherDamage(fastestUnit, slowestUnit);
+
             yield return RunAfterTurn(fastestUnit);
             yield return RunAfterTurn(slowestUnit);
             ActionSelection();
         }
+    }
+
+    IEnumerator WeatherDamage(BattleUnit fastestUnit, BattleUnit slowestUnit)
+    {
+        if (state == BattleState.BattleOver || currWeather?.RoundMessage == null)
+            yield break;
+
+        // Case where Pokemon dies due to Status and we need to wait until the player switches
+        yield return new WaitUntil(() => state == BattleState.RunningTurn);
+
+        yield return dialogBox.TypeDialog(currWeather.RoundMessage);
+
+
+        currWeather.OnAfterTurn?.Invoke(fastestUnit.Pokemon);
+
+        if(fastestUnit.Pokemon.WeatherDamages.Count > 0)
+        {
+            yield return fastestUnit.Hud.UpdateHP();
+            yield return dialogBox.TypeDialog(fastestUnit.Pokemon.WeatherDamages.Dequeue());
+        }
+
+        
+        if (fastestUnit.Pokemon.HP <= 0)
+        {
+
+            yield return CheckIfDead(fastestUnit);
+
+            yield return new WaitUntil(() => state == BattleState.RunningTurn);
+        }
+
+        currWeather.OnAfterTurn?.Invoke(slowestUnit.Pokemon);
+
+        if(slowestUnit.Pokemon.WeatherDamages.Count > 0)
+        {
+            yield return slowestUnit.Hud.UpdateHP();
+            yield return dialogBox.TypeDialog(slowestUnit.Pokemon.WeatherDamages.Dequeue());
+        }
+
+        if (slowestUnit.Pokemon.HP <= 0)
+        {
+
+            yield return CheckIfDead(slowestUnit);
+
+            yield return new WaitUntil(() => state == BattleState.RunningTurn);
+        }
+
+
     }
 
     IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move)
@@ -426,7 +475,7 @@ public class BattleSystem : MonoBehaviour
 
         // Case where Pokemon dies due to Status and we need to wait until the player switches
         yield return new WaitUntil(() => state == BattleState.RunningTurn);
-        
+
         sourceUnit.Pokemon.OnAfterTurn();
         yield return ShowStatusChanges(sourceUnit.Pokemon);
         yield return sourceUnit.Hud.UpdateHP();
@@ -568,9 +617,9 @@ public class BattleSystem : MonoBehaviour
                 yield return dialogBox.TypeDialog("It's super effective!");
             else if (damageDetails.Effectiveness < 1f)
                 yield return dialogBox.TypeDialog("It's not very effective...");
-            else if(damageDetails.Effectiveness == 0)
+            else if (damageDetails.Effectiveness == 0)
                 yield return dialogBox.TypeDialog("It doesn't affect " + target.Base.Name);
-        }   
+        }
     }
 
     public void HandleUpdate()

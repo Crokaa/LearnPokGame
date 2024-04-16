@@ -44,6 +44,7 @@ public class Pokemon
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoosts { get; private set; }
     public Queue<string> StatusChanges { get; private set; }
+    public Queue<string> WeatherDamages { get; private set; }
     public Condition Status { get; set; }
     public bool HpChanged { get; set; }
     public int StatusStime { get; set; }
@@ -69,6 +70,7 @@ public class Pokemon
 
 
         StatusChanges = new Queue<string>();
+        WeatherDamages = new Queue<string>();
 
         HP = MaxHp;
         ResetStatBoost();

@@ -86,11 +86,10 @@ public class WeatherDB : MonoBehaviour
                         if (type1 != PokemonType.Ground && type1 != PokemonType.Rock && type1 != PokemonType.Steel
                         && type2 != PokemonType.Ground && type2 != PokemonType.Rock && type2 != PokemonType.Steel)
                         {
-                            pokemon.UpdateHP(pokemon.MaxHp / 16);
-                            return $"{pokemon.Base.Name} is buffeted by the sandstorm!";
+                            pokemon.UpdateHP(pokemon.MaxHp / 16 == 0 ? 1 : pokemon.MaxHp / 16);
+                            pokemon.WeatherDamages.Enqueue($"{pokemon.Base.Name} is buffeted by the hail!");
 
                         }
-                    return null;
                 }
 
             }
@@ -111,10 +110,9 @@ public class WeatherDB : MonoBehaviour
 
                         if (type1 != PokemonType.Ice || type2 != PokemonType.Ice)
                         {
-                            pokemon.UpdateHP(pokemon.MaxHp / 16);
-                            return $"{pokemon.Base.Name} is buffeted by the hail!";
+                            pokemon.UpdateHP(pokemon.MaxHp / 16 == 0 ? 1 : pokemon.MaxHp / 16);
+                            pokemon.WeatherDamages.Enqueue($"{pokemon.Base.Name} is buffeted by the hail!");
                         }
-                    return null;
                     }
 
             }
@@ -124,7 +122,7 @@ public class WeatherDB : MonoBehaviour
             new Weather ()
                 {
                     Name = "Fog",
-                    RoundMessage = "The fog is deep..."
+                    NaturalStartMessage = "The fog is deep..."
             }
         },
         {
