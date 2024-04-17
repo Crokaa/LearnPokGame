@@ -2,17 +2,15 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] string name;
-    public event Action OnEncountered;
-    public event Action<Collider2D> OnEnterTrainerView;
     private Vector2 input;
     private Character character;
 
     [SerializeField] Sprite sprite;
-    const float offsetY = 0.3f;
 
     public string Name
     {
@@ -24,6 +22,12 @@ public class PlayerController : MonoBehaviour
     {
 
         get { return sprite; }
+    }
+
+    public Character Character
+    {
+
+        get { return character; }
     }
 
     private void Awake()
@@ -44,7 +48,7 @@ public class PlayerController : MonoBehaviour
 
             if (input != Vector2.zero)
                 StartCoroutine(character.Move(input, OnMoveOver));
-                
+
             character.HandleUpdate();
 
             if (Input.GetKeyDown(KeyCode.Z))
@@ -64,34 +68,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnMoveOver() {
-
-        CheckForEncounters();
-        CheckIfInTrainersView();
-    }
-
-    private void CheckForEncounters()
+    private void OnMoveOver()
     {
 
-        if (Physics2D.OverlapCircle(transform.position - new Vector3(0, offsetY), 0.2f, GameLayers.Instance.GrassLayer) != null)
+        var colliders = Physics2D.OverlapCircleAll(transform.position - new Vector3(0, character.offsetY), 0.2f, GameLayers.Instance.TriggerableLayers);
+
+        foreach (var collider in colliders)
         {
-            if (UnityEngine.Random.Range(1, 101) <= 10)
+            var triggerable = collider.GetComponent<IPlayerTriggerable>();
+            if (triggerable != null)
             {
                 character.Animator.IsMoving = false;
-                OnEncountered();
+                triggerable.OnPlayerTriggered(this);
+                break;
             }
-
-        }
-    }
-
-    private void CheckIfInTrainersView() {
-
-        var collider = Physics2D.OverlapCircle(transform.position - new Vector3(0, offsetY), 0.2f, GameLayers.Instance.FovLayer) ;
-
-        if (collider != null)
-        {
-            character.Animator.IsMoving = false;
-            OnEnterTrainerView?.Invoke(collider);
         }
     }
 

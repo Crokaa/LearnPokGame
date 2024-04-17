@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum GameState { FreeRoam, Battle, Dialog, Cutscene }
+public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused }
 
 public class GameController : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     [SerializeField] Camera worldCamera;
 
     GameState state;
+    GameState stateBeforePause;
     TrainerController trainer;
     Weather currWeatherOutside;
     //this will be removed later, I'm just using it for testing
@@ -22,19 +23,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
 
-        playerController.OnEncountered += StartBattle;
         battleSystem.OnBattleOver += EndBattle;
-
-        playerController.OnEnterTrainerView += (Collider2D trainerCollider) =>
-        {
-
-            var trainer = trainerCollider.GetComponentInParent<TrainerController>();
-
-            state = GameState.Cutscene;
-
-            if (trainer != null)
-                StartCoroutine(trainer.TriggerTrainerBattle(playerController));
-        };
 
         DialogManager.Instance.OnShowDialog += () =>
         {
@@ -50,6 +39,20 @@ public class GameController : MonoBehaviour
         };
     }
 
+    public void PauseGame(bool pause)
+    {
+
+        if (pause)
+        {
+            stateBeforePause = state;
+            state = GameState.Paused;
+        }
+        else
+        {
+            state = stateBeforePause;
+        }
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -57,7 +60,7 @@ public class GameController : MonoBehaviour
         WeatherDB.Init();
     }
 
-    void StartBattle()
+    public void StartBattle()
     {
         state = GameState.Battle;
         battleSystem.gameObject.SetActive(true);
@@ -70,6 +73,13 @@ public class GameController : MonoBehaviour
 
         // I will pass the weather here
         battleSystem.StartBattle(playerParty, wildPokemonCopy, currWeatherOutside);
+    }
+
+    public void OnEnterTrainerView(TrainerController trainer)
+    {
+
+        state = GameState.Cutscene;
+        StartCoroutine(trainer.TriggerTrainerBattle(playerController));
     }
 
     public void StartTrainerBattle(TrainerController trainer)
@@ -113,7 +123,7 @@ public class GameController : MonoBehaviour
                 time = 0;
                 Debug.Log("Weather changed to " + currWeatherOutside.Id);
             }
-            
+
             playerController.HandleUpdate();
         }
         else if (state == GameState.Battle)
