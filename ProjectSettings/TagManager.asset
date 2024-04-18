@@ -19,7 +19,7 @@ TagManager:
   - Player
   - FovLayer
   - Portal
-  - 
+  - Collision
   - 
   - 
   - 
@@ -47,7 +47,7 @@ TagManager:
   - name: Foreground
     uniqueID: 1259618491
     locked: 0
-  - name: Player
+  - name: NormalView
     uniqueID: 902619769
     locked: 0
   - name: Battle

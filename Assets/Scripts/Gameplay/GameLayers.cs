@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameLayers : MonoBehaviour
 {
     [SerializeField] LayerMask solidObjects;
+    [SerializeField] LayerMask collision;
     [SerializeField] LayerMask grassLayer;
     [SerializeField] LayerMask interactableLayer;
     [SerializeField] LayerMask playerLayer;
@@ -15,6 +16,12 @@ public class GameLayers : MonoBehaviour
     {
         get { return solidObjects; }
     }
+
+      public LayerMask Collision
+    {
+        get { return collision; }
+    }
+
 
     public LayerMask GrassLayer
     {

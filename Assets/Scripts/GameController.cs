@@ -93,7 +93,6 @@ public class GameController : MonoBehaviour
         var playerParty = playerController.GetComponent<PokemonParty>();
         var trainerParty = trainer.GetComponent<PokemonParty>();
 
-        // I will pass the weather here
         battleSystem.StartTrainerBattle(playerParty, trainerParty, currWeatherOutside);
     }
 

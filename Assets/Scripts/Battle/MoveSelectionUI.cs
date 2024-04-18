@@ -37,7 +37,6 @@ public class MoveSelectionUI : MonoBehaviour
 
     public void HandleMoveSelection(Action<int> onSelected)
     {
-        Debug.Log("still here");
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             currentSelection++;
