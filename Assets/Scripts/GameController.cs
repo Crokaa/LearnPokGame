@@ -15,6 +15,8 @@ public class GameController : MonoBehaviour
     GameState stateBeforePause;
     TrainerController trainer;
     Weather currWeatherOutside;
+    public SceneDetails CurrentScene { get; private set; }
+    public SceneDetails PrevScene { get; private set; }
     //this will be removed later, I'm just using it for testing
     float time = 0;
 
@@ -131,5 +133,11 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.Dialog)
             DialogManager.Instance.HandleUpdate();
+    }
+
+    public void SetCurrentScene(SceneDetails currScene)
+    {
+        PrevScene = CurrentScene;
+        CurrentScene = currScene;
     }
 }
