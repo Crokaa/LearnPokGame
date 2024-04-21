@@ -12,10 +12,9 @@ public class Weather : MonoBehaviour
     public string RoundMessage { get; set; }
     public string LeaveMessage { get; set; }
     public string PreventWeatherMessage { get; set; }
-    public string MoveEffectivenessMessage { get; set; }
     public WeatherID Id;
-    public Func<Move, Pokemon, float> ChangeEffectiveness { get; set; }
-    public Func<Move, float> DuringMove { get; set; }
+    public Func<Move, Pokemon, float> OnModifyDamage { get; set; }
+    public Func<Move, Pokemon, string> ChangeEffectivenessMessage { get; set; }
     public Func<Pokemon, int> ResistOnWeather { get; set; }
     public Action<Pokemon> OnAfterTurn { get; set; }
 

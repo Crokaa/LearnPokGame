@@ -32,7 +32,7 @@ public class WeatherDB : MonoBehaviour
                     //This might be deleted or not depending on how the game goes
                     RoundMessage = "The sunlight is strong.",
                     LeaveMessage = "The harsh sunlight faded.",
-                    DuringMove = (Move move) => {
+                    OnModifyDamage = (Move move, Pokemon target) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 1.5f ;
                         else if (move.Base.Type == PokemonType.Water)
@@ -53,7 +53,7 @@ public class WeatherDB : MonoBehaviour
                     //This might be deleted or not depending on how the game goes
                     RoundMessage = "Rain continues to fall.",
                     LeaveMessage = "The rain stopped.",
-                    DuringMove = (Move move) => {
+                    OnModifyDamage = (Move move, Pokemon target) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 0.5f ;
                         else if (move.Base.Type == PokemonType.Water)
@@ -86,8 +86,8 @@ public class WeatherDB : MonoBehaviour
                         if (type1 != PokemonType.Ground && type1 != PokemonType.Rock && type1 != PokemonType.Steel
                         && type2 != PokemonType.Ground && type2 != PokemonType.Rock && type2 != PokemonType.Steel)
                         {
-                            pokemon.UpdateHP(pokemon.MaxHp / 16 == 0 ? 1 : pokemon.MaxHp / 16);
-                            pokemon.WeatherDamages.Enqueue($"{pokemon.Base.Name} is buffeted by the hail!");
+                            pokemon.UpdateHP(Mathf.RoundToInt((float)pokemon.MaxHp / 16));
+                            pokemon.WeatherDamages.Enqueue($"{pokemon.Base.Name} is buffeted by the sandstorm!");
 
                         }
                 }
@@ -110,7 +110,7 @@ public class WeatherDB : MonoBehaviour
 
                         if (type1 != PokemonType.Ice || type2 != PokemonType.Ice)
                         {
-                            pokemon.UpdateHP(pokemon.MaxHp / 16 == 0 ? 1 : pokemon.MaxHp / 16);
+                            pokemon.UpdateHP(Mathf.RoundToInt((float)pokemon.MaxHp / 16));
                             pokemon.WeatherDamages.Enqueue($"{pokemon.Base.Name} is buffeted by the hail!");
                         }
                     }
@@ -132,16 +132,21 @@ public class WeatherDB : MonoBehaviour
                     Name = "Extremely Harsh Sunlight",
                     StartMessage = "The sunlight turned extremely harsh!",
                     PreventWeatherMessage = "The extremely harsh sunlight was not lessened at all!",
-                    MoveEffectivenessMessage = "The Water-type attack evaporated in the harsh sunlight!",
                     LeaveMessage = "The harsh sunlight faded.",
-                    // I use this method because in take damage this applies an effectivenessChange that will show a message later
-                    ChangeEffectiveness = (Move move, Pokemon target) => {
+                    OnModifyDamage = (Move move, Pokemon target) => {
                         if (move.Base.Type == PokemonType.Fire)
                             return 1.5f ;
                         else if (move.Base.Type == PokemonType.Water)
                             return 0.0f;
 
                         return 1f;
+                    },
+                    // I use this method because in take damage this applies an effectivenessChange that will show a message later
+                    ChangeEffectivenessMessage = (Move move, Pokemon target) => {
+                        if (move.Base.Type == PokemonType.Water)
+                            return "The Water-type attack evaporated in the harsh sunlight!";
+
+                        return null;
                     }
             }
         },
@@ -152,16 +157,20 @@ public class WeatherDB : MonoBehaviour
                     Name = "Heavy Rain",
                     StartMessage = "A heavy rain began to fall!",
                     PreventWeatherMessage = "There is no relief from this heavy rain!",
-                    MoveEffectivenessMessage = "The Fire-type attack fizzled out in the heavy rain!",
                     LeaveMessage = "The heavy rain has lifted!",
-                    // I use this method because in take damage this applies an effectivenessChange that will show a message later
-                    ChangeEffectiveness = (Move move, Pokemon target) => {
-                        if (move.Base.Type == PokemonType.Water)
-                            return 1.5f ;
-                        else if (move.Base.Type == PokemonType.Fire)
-                            return 0.0f;
+                    OnModifyDamage = (Move move, Pokemon target) => {
+                        if (move.Base.Type == PokemonType.Fire)
+                            return 0.0f ;
+                        else if (move.Base.Type == PokemonType.Water)
+                            return 1.5f;
 
                         return 1f;
+                    },
+                    ChangeEffectivenessMessage = (Move move, Pokemon target) => {
+                        if (move.Base.Type == PokemonType.Fire)
+                            return "The Fire-type attack fizzled out in the heavy rain!";
+
+                        return null;
                     }
             }
         },
@@ -172,17 +181,25 @@ public class WeatherDB : MonoBehaviour
                     Name = "Strong winds",
                     StartMessage = "Mysterious strong winds are protecting Flying-type Pokémon!",
                     PreventWeatherMessage = "The mysterious strong winds blow on regardless!",
-                    MoveEffectivenessMessage = "The mysterious strong winds weakened the attack!",
                     LeaveMessage = "The mysterious strong winds have dissipated!",
-                    // This method makes sense here as the target needs to be a flying type.
-                    ChangeEffectiveness = (Move move, Pokemon target) => {
-
+                    OnModifyDamage = (Move move, Pokemon target) => {
+                        var moveType = move.Base.Type;
                         var type1 = target.Base.Type1;
                         var type2 = target.Base.Type2;
-                        if ((move.Base.Type == PokemonType.Electric || move.Base.Type == PokemonType.Ice || move.Base.Type == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))
+                        if ((moveType == PokemonType.Electric || moveType == PokemonType.Ice || moveType == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))
                             return 0.5f ;
 
                         return 1f;
+                    },
+                    // This method makes sense here as the target needs to be a flying type.
+                    ChangeEffectivenessMessage = (Move move, Pokemon target) => {
+                        var moveType = move.Base.Type;
+                        var type1 = target.Base.Type1;
+                        var type2 = target.Base.Type2;
+                        if ((moveType == PokemonType.Electric || moveType == PokemonType.Ice || moveType == PokemonType.Rock) && (type1 == PokemonType.Flying || type2 == PokemonType.Flying))
+                            return "The mysterious strong winds weakened the attack!" ;
+
+                        return null;
                     }
             }
         },

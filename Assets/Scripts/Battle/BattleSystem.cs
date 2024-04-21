@@ -43,7 +43,7 @@ public class BattleSystem : MonoBehaviour
     bool isTrainerBattle;
     PlayerController player;
     TrainerController trainer;
-    Weather currWeather;
+    Field field;
 
     public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon, Weather outsideWeather)
     {
@@ -54,9 +54,11 @@ public class BattleSystem : MonoBehaviour
         currentMember = 0;
         player = playerParty.GetComponent<PlayerController>();
         isTrainerBattle = false;
-        Debug.Log(outsideWeather);
-        currWeather = outsideWeather;
+        field = new Field();
+        if (outsideWeather is not null)
+            field.SetWeather(outsideWeather.Id);
 
+        field.SetWeather(WeatherID.sand);
         StartCoroutine(SetupBattle());
     }
 
@@ -70,7 +72,9 @@ public class BattleSystem : MonoBehaviour
         currentAction = 0;
         currentMove = 0;
         currentMember = 0;
-        currWeather = outsideWeather;
+        field = new Field();
+        if (outsideWeather is not null)
+            field.SetWeather(outsideWeather.Id);
 
         StartCoroutine(SetupBattle());
     }
@@ -126,8 +130,8 @@ public class BattleSystem : MonoBehaviour
             yield return dialogBox.TypeDialog($"Go {playerPokemon.Base.Name}!");
         }
 
-        if (currWeather?.NaturalStartMessage is not null)
-            yield return dialogBox.TypeDialog(currWeather.NaturalStartMessage);
+        if (field.Weather?.NaturalStartMessage is not null)
+            yield return dialogBox.TypeDialog(field.Weather.NaturalStartMessage);
 
         dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
         partyScreen.Init();
@@ -273,34 +277,65 @@ public class BattleSystem : MonoBehaviour
             fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
             slowestUnit = playerGoesFirst ? enemyUnit : playerUnit;
 
-            yield return WeatherDamage(fastestUnit, slowestUnit);
-
+            if (field.Weather is not null)
+            {   
+                yield return dialogBox.TypeDialog(field.Weather.RoundMessage);
+                //yield return WeatherDamage(fastestUnit, slowestUnit);
+                yield return WeatherDamage(fastestUnit);
+                yield return WeatherDamage(slowestUnit);
+            }
             yield return RunAfterTurn(fastestUnit);
             yield return RunAfterTurn(slowestUnit);
             ActionSelection();
         }
     }
 
-    IEnumerator WeatherDamage(BattleUnit fastestUnit, BattleUnit slowestUnit)
+    IEnumerator WeatherDamage(BattleUnit sourceUnit)
     {
-        if (state == BattleState.BattleOver || currWeather?.RoundMessage == null)
+        if (state == BattleState.BattleOver)
             yield break;
 
         // Case where Pokemon dies due to Status and we need to wait until the player switches
         yield return new WaitUntil(() => state == BattleState.RunningTurn);
 
-        yield return dialogBox.TypeDialog(currWeather.RoundMessage);
+        field.Weather.OnAfterTurn?.Invoke(sourceUnit.Pokemon);
 
+        yield return ShowWeatherChanges(sourceUnit.Pokemon);
 
-        currWeather.OnAfterTurn?.Invoke(fastestUnit.Pokemon);
+        if (sourceUnit.Pokemon.HpChanged)
+            sourceUnit.PlayHitAnimation();
 
-        if(fastestUnit.Pokemon.WeatherDamages.Count > 0)
+        yield return sourceUnit.Hud.UpdateHP();
+
+        if (sourceUnit.Pokemon.HP <= 0)
         {
-            yield return fastestUnit.Hud.UpdateHP();
-            yield return dialogBox.TypeDialog(fastestUnit.Pokemon.WeatherDamages.Dequeue());
-        }
 
-        
+            yield return CheckIfDead(sourceUnit);
+
+            yield return new WaitUntil(() => state == BattleState.RunningTurn);
+        }
+    }
+
+    IEnumerator WeatherDamage(BattleUnit fastestUnit, BattleUnit slowestUnit)
+    {
+        if (state == BattleState.BattleOver)
+            yield break;
+
+        // Case where Pokemon dies due to Status and we need to wait until the player switches
+        yield return new WaitUntil(() => state == BattleState.RunningTurn);
+
+        yield return dialogBox.TypeDialog(field.Weather.RoundMessage);
+
+
+        field.Weather.OnAfterTurn?.Invoke(fastestUnit.Pokemon);
+
+        yield return ShowWeatherChanges(fastestUnit.Pokemon);
+
+        if (fastestUnit.Pokemon.HpChanged)
+            fastestUnit.PlayHitAnimation();
+
+        yield return fastestUnit.Hud.UpdateHP();
+
         if (fastestUnit.Pokemon.HP <= 0)
         {
 
@@ -309,13 +344,14 @@ public class BattleSystem : MonoBehaviour
             yield return new WaitUntil(() => state == BattleState.RunningTurn);
         }
 
-        currWeather.OnAfterTurn?.Invoke(slowestUnit.Pokemon);
+        field.Weather.OnAfterTurn?.Invoke(slowestUnit.Pokemon);
 
-        if(slowestUnit.Pokemon.WeatherDamages.Count > 0)
-        {
-            yield return slowestUnit.Hud.UpdateHP();
-            yield return dialogBox.TypeDialog(slowestUnit.Pokemon.WeatherDamages.Dequeue());
-        }
+        yield return ShowWeatherChanges(slowestUnit.Pokemon);
+
+        if (slowestUnit.Pokemon.HpChanged)
+            slowestUnit.PlayHitAnimation();
+
+        yield return slowestUnit.Hud.UpdateHP();
 
         if (slowestUnit.Pokemon.HP <= 0)
         {
@@ -361,7 +397,7 @@ public class BattleSystem : MonoBehaviour
             else
             {
                 targetUnit.PlayHitAnimation();
-                var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, currWeather);
+                var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, field.Weather);
                 yield return targetUnit.Hud.UpdateHP();
                 yield return ShowDamageDetails(damageDetails, targetUnit.Pokemon);
             }
@@ -525,7 +561,7 @@ public class BattleSystem : MonoBehaviour
 
         float moveAccuracy = move.Base.Accuracy;
 
-        if (currWeather != null && currWeather.Id == WeatherID.fog)
+        if (field.Weather?.Id == WeatherID.fog)
             moveAccuracy = move.Base.Accuracy * 3 / 5f;
 
         int accuracy = source.StatBoosts[Stat.Accuracy];
@@ -549,6 +585,14 @@ public class BattleSystem : MonoBehaviour
         return UnityEngine.Random.Range(1, 101) <= moveAccuracy;
     }
 
+    IEnumerator ShowWeatherChanges(Pokemon pokemon)
+    {
+        while (pokemon.WeatherDamages.Count > 0)
+        {
+            var message = pokemon.WeatherDamages.Dequeue();
+            yield return dialogBox.TypeDialog(message);
+        }
+    }
 
     IEnumerator ShowStatusChanges(Pokemon pokemon)
     {
@@ -604,22 +648,24 @@ public class BattleSystem : MonoBehaviour
     IEnumerator ShowDamageDetails(DamageDetails damageDetails, Pokemon target)
     {
 
-        if (damageDetails.Critical > 1f)
+        if (damageDetails.WeatherEffectMessage != null)
+        {
+            yield return dialogBox.TypeDialog(damageDetails.WeatherEffectMessage);
+
+            if (damageDetails.Effectiveness == 0f)
+                yield break;
+        }
+
+        if (damageDetails.Critical > 1f && damageDetails.Effectiveness != 0)
             yield return dialogBox.TypeDialog("A critical hit!");
 
-        if (damageDetails.ShowWeatherEffectOnMove)
-        {
-            yield return dialogBox.TypeDialog(currWeather.MoveEffectivenessMessage);
-        }
-        else
-        {
-            if (damageDetails.Effectiveness > 1f)
-                yield return dialogBox.TypeDialog("It's super effective!");
-            else if (damageDetails.Effectiveness < 1f)
-                yield return dialogBox.TypeDialog("It's not very effective...");
-            else if (damageDetails.Effectiveness == 0)
-                yield return dialogBox.TypeDialog("It doesn't affect " + target.Base.Name);
-        }
+        if (damageDetails.Effectiveness > 1f)
+            yield return dialogBox.TypeDialog("It's super effective!");
+        else if (damageDetails.Effectiveness < 1f)
+            yield return dialogBox.TypeDialog("It's not very effective...");
+        else if (damageDetails.Effectiveness == 0)
+            yield return dialogBox.TypeDialog("It doesn't affect " + target.Base.Name);
+
     }
 
     public void HandleUpdate()
