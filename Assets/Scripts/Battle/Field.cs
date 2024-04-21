@@ -6,7 +6,7 @@ public class Field
 {
     
     public Weather Weather { get; set; }
-    public int? WeatherDurantion { get; set; }
+    public int? WeatherDuration { get; set; }
 
     public void SetWeather(WeatherID weatherId)
     {

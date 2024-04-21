@@ -71,8 +71,8 @@ public class WeatherDB : MonoBehaviour
                     Name = "Sandstorm",
                     NaturalStartMessage = "The sandstorm is raging!",
                     StartMessage = "A sandstorm kicked up!",
-                    //This might be deleted or not depending on how the game goes
                     RoundMessage = "The sandstorm is raging!",
+                    LeaveMessage = "The sandstorm subsided.",
                     ResistOnWeather = (Pokemon pokemon) => {
                         if (pokemon.Base.Type1 == PokemonType.Rock || pokemon.Base.Type2 == PokemonType.Rock)
                             return Mathf.FloorToInt(pokemon.SpDefense * 1.5f);

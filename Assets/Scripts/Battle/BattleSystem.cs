@@ -58,7 +58,8 @@ public class BattleSystem : MonoBehaviour
         if (outsideWeather is not null)
             field.SetWeather(outsideWeather.Id);
 
-        field.SetWeather(WeatherID.sand);
+        //use this to set the weather that I want
+        //field.SetWeather(WeatherID.sand);
         StartCoroutine(SetupBattle());
     }
 
@@ -283,6 +284,16 @@ public class BattleSystem : MonoBehaviour
                 //yield return WeatherDamage(fastestUnit, slowestUnit);
                 yield return WeatherDamage(fastestUnit);
                 yield return WeatherDamage(slowestUnit);
+
+                if (field.WeatherDuration != null)
+                {
+                    field.WeatherDuration--;
+                    if(field.WeatherDuration == 0){
+                        yield return dialogBox.TypeDialog(field.Weather.LeaveMessage);
+                        field.Weather = null;
+                        field.WeatherDuration = null;
+                        }
+                }
             }
             yield return RunAfterTurn(fastestUnit);
             yield return RunAfterTurn(slowestUnit);
@@ -545,6 +556,13 @@ public class BattleSystem : MonoBehaviour
             {
 
                 target.SetVolatileStatus(effects.VolatileStatus);
+            }
+
+            if (effects.Weather != WeatherID.none && field.Weather is null)
+            {
+                field.SetWeather(effects.Weather);
+                field.WeatherDuration = 5;
+                yield return dialogBox.TypeDialog(field.Weather.StartMessage);
             }
 
             yield return ShowStatusChanges(source);
