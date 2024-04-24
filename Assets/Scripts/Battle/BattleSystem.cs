@@ -281,7 +281,6 @@ public class BattleSystem : MonoBehaviour
             if (field.Weather?.OnAfterTurn is not null)
             {
                 yield return dialogBox.TypeDialog(field.Weather.RoundMessage);
-                //yield return WeatherDamage(fastestUnit, slowestUnit);
                 yield return WeatherDamage(fastestUnit);
                 yield return WeatherDamage(slowestUnit);
 
@@ -328,54 +327,6 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    IEnumerator WeatherDamage(BattleUnit fastestUnit, BattleUnit slowestUnit)
-    {
-        if (state == BattleState.BattleOver)
-            yield break;
-
-        // Case where Pokemon dies due to Status and we need to wait until the player switches
-        yield return new WaitUntil(() => state == BattleState.RunningTurn);
-
-        yield return dialogBox.TypeDialog(field.Weather.RoundMessage);
-
-
-        field.Weather.OnAfterTurn?.Invoke(fastestUnit.Pokemon);
-
-        yield return ShowWeatherChanges(fastestUnit.Pokemon);
-
-        if (fastestUnit.Pokemon.HpChanged)
-            fastestUnit.PlayHitAnimation();
-
-        yield return fastestUnit.Hud.UpdateHP();
-
-        if (fastestUnit.Pokemon.HP <= 0)
-        {
-
-            yield return CheckIfDead(fastestUnit);
-
-            yield return new WaitUntil(() => state == BattleState.RunningTurn);
-        }
-
-        field.Weather.OnAfterTurn?.Invoke(slowestUnit.Pokemon);
-
-        yield return ShowWeatherChanges(slowestUnit.Pokemon);
-
-        if (slowestUnit.Pokemon.HpChanged)
-            slowestUnit.PlayHitAnimation();
-
-        yield return slowestUnit.Hud.UpdateHP();
-
-        if (slowestUnit.Pokemon.HP <= 0)
-        {
-
-            yield return CheckIfDead(slowestUnit);
-
-            yield return new WaitUntil(() => state == BattleState.RunningTurn);
-        }
-
-
-    }
-
     IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move)
     {
 
@@ -402,6 +353,7 @@ public class BattleSystem : MonoBehaviour
             var moveHits = move.Base.GetHitTimes();
             int hitTimes = 0;
             string weatherEffectMessage = null;
+            int damage = 0;
             float effectiveness = 1f;
             for (int i = 0; i < moveHits; i++)
             {
@@ -417,6 +369,7 @@ public class BattleSystem : MonoBehaviour
                     var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, field.Weather);
                     weatherEffectMessage = damageDetails.WeatherEffectMessage;
                     effectiveness = damageDetails.Effectiveness;
+                    damage = damageDetails.Damage;
                     if (effectiveness == 0f)
                         break;
 
@@ -427,6 +380,13 @@ public class BattleSystem : MonoBehaviour
                     yield return targetUnit.Hud.UpdateHP();
                     yield return ShowCrit(damageDetails, targetUnit.Pokemon);
 
+                }
+
+                if(move.Base.HealPercentage > 0)
+                {
+                    sourceUnit.Pokemon.ReceiveHP(move, damage);
+                    yield return sourceUnit.Hud.UpdateHP();
+                    yield return dialogBox.TypeDialog($"The {targetUnit.Pokemon.Base.Name} had its energy drained!");
                 }
 
                 if (move.Base.SecEffects is not null && move.Base.SecEffects.Count > 0 && targetUnit.Pokemon.HP > 0)

@@ -21,6 +21,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] MoveTarget target;
     [SerializeField] List<SecondaryEffects> secEffects;
     [SerializeField] Vector2Int hitRange;
+    [SerializeField] int healPercentage;
 
 
     public string Name
@@ -81,6 +82,11 @@ public class MoveBase : ScriptableObject
     public List<SecondaryEffects> SecEffects
     {
         get { return secEffects; }
+    }
+
+    public int HealPercentage
+    {
+        get { return healPercentage; }
     }
 
     // This will suffer some changes probably due to some moves who get accuracy check every turn.

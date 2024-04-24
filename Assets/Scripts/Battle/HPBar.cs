@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,9 @@ public class HPBar : MonoBehaviour
      float currHP = health.transform.localScale.x;
      float change = currHP - newHP;
 
-     while (currHP - newHP > Mathf.Epsilon)
+     bool damaged = newHP < currHP;
+
+     while (damaged ? currHP - newHP > Mathf.Epsilon : newHP - currHP > Mathf.Epsilon)
      {
           currHP -= change * Time.deltaTime;
           health.transform.localScale = new Vector3(currHP, 1f);

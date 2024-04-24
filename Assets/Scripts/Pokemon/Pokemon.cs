@@ -269,14 +269,6 @@ public class Pokemon
         float weatherMod = weather?.OnModifyDamage?.Invoke(move, this) ?? 1f;
         string weatherEffect = weather?.ChangeEffectivenessMessage?.Invoke(move, this) ?? null;
 
-        var damageDetails = new DamageDetails()
-        {
-            Effectiveness = weatherEffect == null ? effectiveness : effectiveness * weatherMod,
-            WeatherEffectMessage = weatherEffect,
-            Critical = critical,
-            Fainted = false
-        };
-
         float attack = move.Base.Category == MoveCategory.Special ? attacker.SpAttack : attacker.Attack;
         float defense = move.Base.Category == MoveCategory.Special ? SpDefense : Defense;
 
@@ -284,6 +276,15 @@ public class Pokemon
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);
+
+        var damageDetails = new DamageDetails()
+        {   
+            Damage = damage,
+            Effectiveness = weatherEffect == null ? effectiveness : effectiveness * weatherMod,
+            WeatherEffectMessage = weatherEffect,
+            Critical = critical,
+            Fainted = false
+        };
 
         UpdateHP(damage);
         return damageDetails;
@@ -308,6 +309,13 @@ public class Pokemon
             HpChanged = true;
     }
 
+    public void HealHP(int heal)
+    {
+        if (HP != MaxHp)
+            HpChanged = true;
+        HP = HP + heal <= MaxHp ? HP + heal : MaxHp;
+    }
+
     // For now only works if enemy has moves with PP, will be fixed later when introducing Struggle
     public Move GetRandomMove()
     {
@@ -317,11 +325,17 @@ public class Pokemon
         return movesWithPP[r];
     }
 
+    public void ReceiveHP(Move move, int damage)
+    {
+        var heal = damage == 1 ? 1 : Mathf.FloorToInt(damage * (move.Base.HealPercentage / 100f));
+        HealHP(heal);
+    }
 }
 
 public class DamageDetails
 {
 
+    public int Damage { get; set; }
     public bool Fainted { get; set; }
     public float Critical { get; set; }
     public float Effectiveness { get; set; }
