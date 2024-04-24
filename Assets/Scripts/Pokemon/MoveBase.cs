@@ -20,6 +20,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] MoveEffects effects;
     [SerializeField] MoveTarget target;
     [SerializeField] List<SecondaryEffects> secEffects;
+    [SerializeField] Vector2Int hitRange;
 
 
     public string Name
@@ -66,12 +67,12 @@ public class MoveBase : ScriptableObject
     {
         get { return category; }
     }
-    
+
     public MoveEffects Effects
     {
         get { return effects; }
     }
-    
+
     public MoveTarget Target
     {
         get { return target; }
@@ -80,6 +81,36 @@ public class MoveBase : ScriptableObject
     public List<SecondaryEffects> SecEffects
     {
         get { return secEffects; }
+    }
+
+    // This will suffer some changes probably due to some moves who get accuracy check every turn.
+    public int GetHitTimes()
+    {
+        if (hitRange.x == 0)
+            return 1;
+
+        if (hitRange.y == 0)
+            return hitRange.x;
+
+        int r = Random.Range(1, 101);
+
+        int hitCount = 1;
+        switch (r)
+        {
+            case <= 35:
+                hitCount = hitRange.x;
+                break;
+            case <= 70:
+                hitCount = hitRange.x + 1;
+                break;
+            case <= 85:
+                hitCount = hitRange.x + 2;
+                break;
+            case <= 100:
+                hitCount = hitRange.y;
+                break;
+        }
+        return hitCount;
     }
 }
 
@@ -101,19 +132,25 @@ public class MoveEffects
         }
     }
 
-    public ConditionID Status {
-        get {
+    public ConditionID Status
+    {
+        get
+        {
             return status;
         }
     }
-    
-    public ConditionID VolatileStatus {
-        get {
+
+    public ConditionID VolatileStatus
+    {
+        get
+        {
             return volatileStatus;
         }
     }
-    public WeatherID Weather {
-        get {
+    public WeatherID Weather
+    {
+        get
+        {
             return weather;
         }
     }
@@ -126,14 +163,18 @@ public class SecondaryEffects : MoveEffects
     [SerializeField] int chance;
     [SerializeField] MoveTarget target;
 
-    public int Chance {
-        get {
+    public int Chance
+    {
+        get
+        {
             return chance;
         }
     }
 
-    public MoveTarget Target {
-        get {
+    public MoveTarget Target
+    {
+        get
+        {
             return target;
         }
     }

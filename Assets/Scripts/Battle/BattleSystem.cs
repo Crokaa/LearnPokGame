@@ -59,7 +59,7 @@ public class BattleSystem : MonoBehaviour
             field.SetWeather(outsideWeather.Id);
 
         //use this to set the weather that I want
-        //field.SetWeather(WeatherID.sand);
+        //field.SetWeather(WeatherID.exsun);
         StartCoroutine(SetupBattle());
     }
 
@@ -278,8 +278,8 @@ public class BattleSystem : MonoBehaviour
             fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
             slowestUnit = playerGoesFirst ? enemyUnit : playerUnit;
 
-            if (field.Weather is not null)
-            {   
+            if (field.Weather?.OnAfterTurn is not null)
+            {
                 yield return dialogBox.TypeDialog(field.Weather.RoundMessage);
                 //yield return WeatherDamage(fastestUnit, slowestUnit);
                 yield return WeatherDamage(fastestUnit);
@@ -288,11 +288,12 @@ public class BattleSystem : MonoBehaviour
                 if (field.WeatherDuration != null)
                 {
                     field.WeatherDuration--;
-                    if(field.WeatherDuration == 0){
+                    if (field.WeatherDuration == 0)
+                    {
                         yield return dialogBox.TypeDialog(field.Weather.LeaveMessage);
                         field.Weather = null;
                         field.WeatherDuration = null;
-                        }
+                    }
                 }
             }
             yield return RunAfterTurn(fastestUnit);
@@ -393,36 +394,65 @@ public class BattleSystem : MonoBehaviour
 
         yield return ShowStatusChanges(sourceUnit.Pokemon);
         move.Pp--;
-        yield return dialogBox.TypeDialog($"{sourceUnit.Pokemon.Base.Name} used {move.Base.Name}");
+        yield return dialogBox.TypeDialog($"{sourceUnit.Pokemon.Base.Name} used {move.Base.Name}.");
 
         if (CheckMoveHits(move, sourceUnit.Pokemon, targetUnit.Pokemon))
         {
 
-            sourceUnit.PlayAttackAnimation();
-            yield return new WaitForSeconds(1f);
-
-            if (move.Base.Category == MoveCategory.Status)
-            {
-                yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, move.Base.Target, move.Base.Effects);
-            }
-            else
-            {
-                targetUnit.PlayHitAnimation();
-                var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, field.Weather);
-                yield return targetUnit.Hud.UpdateHP();
-                yield return ShowDamageDetails(damageDetails, targetUnit.Pokemon);
-            }
-
-            if (move.Base.SecEffects is not null && move.Base.SecEffects.Count > 0 && targetUnit.Pokemon.HP > 0)
+            var moveHits = move.Base.GetHitTimes();
+            int hitTimes = 0;
+            string weatherEffectMessage = null;
+            float effectiveness = 1f;
+            for (int i = 0; i < moveHits; i++)
             {
 
-                foreach (var secEffect in move.Base.SecEffects)
+                if (move.Base.Category == MoveCategory.Status)
+                {
+                    sourceUnit.PlayAttackAnimation();
+                    yield return new WaitForSeconds(1f);
+                    yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, move.Base.Target, move.Base.Effects);
+                }
+                else
+                {
+                    var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, field.Weather);
+                    weatherEffectMessage = damageDetails.WeatherEffectMessage;
+                    effectiveness = damageDetails.Effectiveness;
+                    if (effectiveness == 0f)
+                        break;
+
+                    sourceUnit.PlayAttackAnimation();
+                    yield return new WaitForSeconds(1f);
+
+                    targetUnit.PlayHitAnimation();
+                    yield return targetUnit.Hud.UpdateHP();
+                    yield return ShowCrit(damageDetails, targetUnit.Pokemon);
+
+                }
+
+                if (move.Base.SecEffects is not null && move.Base.SecEffects.Count > 0 && targetUnit.Pokemon.HP > 0)
                 {
 
-                    var rdm = UnityEngine.Random.Range(1, 100);
-                    if (rdm <= secEffect.Chance)
-                        yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, secEffect.Target, secEffect);
+                    foreach (var secEffect in move.Base.SecEffects)
+                    {
+
+                        var rdm = UnityEngine.Random.Range(1, 100);
+                        if (rdm <= secEffect.Chance)
+                            yield return RunMoveEffects(sourceUnit.Pokemon, targetUnit.Pokemon, secEffect.Target, secEffect);
+                    }
                 }
+
+                hitTimes++;
+                if (targetUnit.Pokemon.HP <= 0)
+                    break;
+            }
+            yield return ShowWeatherAndEffectiveness(weatherEffectMessage, effectiveness, targetUnit.Pokemon);
+
+            if (moveHits > 1)
+            {
+                if (hitTimes == 1)
+                    yield return dialogBox.TypeDialog($"The pokemon was hit {hitTimes} time");
+                else if (hitTimes > 1)
+                    yield return dialogBox.TypeDialog($"The pokemon was hit {hitTimes} times!");
             }
 
             if (targetUnit.Pokemon.HP <= 0)
@@ -558,6 +588,7 @@ public class BattleSystem : MonoBehaviour
                 target.SetVolatileStatus(effects.VolatileStatus);
             }
 
+            //This will be changed a bit  
             if (effects.Weather != WeatherID.none && field.Weather is null)
             {
                 field.SetWeather(effects.Weather);
@@ -663,26 +694,29 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.RunningTurn;
     }
 
-    IEnumerator ShowDamageDetails(DamageDetails damageDetails, Pokemon target)
+    IEnumerator ShowCrit(DamageDetails damageDetails, Pokemon target)
     {
-
-        if (damageDetails.WeatherEffectMessage != null)
-        {
-            yield return dialogBox.TypeDialog(damageDetails.WeatherEffectMessage);
-
-            if (damageDetails.Effectiveness == 0f)
-                yield break;
-        }
-
         if (damageDetails.Critical > 1f && damageDetails.Effectiveness != 0)
             yield return dialogBox.TypeDialog("A critical hit!");
 
-        if (damageDetails.Effectiveness > 1f)
+    }
+
+    IEnumerator ShowWeatherAndEffectiveness(string WeatherEffectMessage, float effectiveness, Pokemon target)
+    {
+        if (WeatherEffectMessage != null)
+        {
+            yield return dialogBox.TypeDialog(WeatherEffectMessage);
+
+            if (effectiveness == 0f)
+                yield break;
+        }
+
+        if (effectiveness == 0f)
+            yield return dialogBox.TypeDialog($"It doesn't affect {target.Base.Name}.");
+        else if (effectiveness > 1f)
             yield return dialogBox.TypeDialog("It's super effective!");
-        else if (damageDetails.Effectiveness < 1f)
+        else if (effectiveness < 1f && effectiveness > 0f)
             yield return dialogBox.TypeDialog("It's not very effective...");
-        else if (damageDetails.Effectiveness == 0)
-            yield return dialogBox.TypeDialog("It doesn't affect " + target.Base.Name);
 
     }
 
