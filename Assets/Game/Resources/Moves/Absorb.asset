@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Absorb
   m_EditorClassIdentifier: 
   name: Absorb
-  description: "\tA nutrient-draining attack. The user\u2019s HP is restored by up
+  description: "A nutrient-draining attack. The user\u2019s HP is restored by up
     to half the damage taken by the target."
   type: 5
   power: 20

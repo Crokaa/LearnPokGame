@@ -46,6 +46,7 @@ public class Pokemon
     public Queue<string> StatusChanges { get; private set; }
     public Queue<string> WeatherDamages { get; private set; }
     public Condition Status { get; set; }
+    public Ability Ability { get; set; }
     public bool HpChanged { get; set; }
     public int StatusStime { get; set; }
     public Condition VolatileStatus { get; set; }
@@ -71,6 +72,7 @@ public class Pokemon
 
         StatusChanges = new Queue<string>();
         WeatherDamages = new Queue<string>();
+        Ability = AbilitiesDB.Abilities[Base.Ability];
 
         HP = MaxHp;
         ResetStatBoost();
@@ -272,7 +274,10 @@ public class Pokemon
         float attack = move.Base.Category == MoveCategory.Special ? attacker.SpAttack : attacker.Attack;
         float defense = move.Base.Category == MoveCategory.Special ? SpDefense : Defense;
 
-        float modifiers = UnityEngine.Random.Range(0.85f, 1f) * effectiveness * critical * weatherMod;
+        float stab = attacker.Base.Type1 == move.Base.Type || attacker.Base.Type2 == move.Base.Type ? 1.5f : 1f;
+        stab = attacker.Ability.OnApplyStab?.Invoke(stab) ?? stab;
+
+        float modifiers = UnityEngine.Random.Range(85, 100) / 100 * effectiveness * critical * weatherMod;
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);

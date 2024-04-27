@@ -5,10 +5,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.Build;
 using UnityEngine;
 
-public class WeatherDB : MonoBehaviour
+public class WeatherDB
 {
 
-    internal static void Init()
+    public static void Init()
     {
         foreach (var kvp in Weathers)
         {

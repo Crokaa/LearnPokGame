@@ -17,6 +17,7 @@ public class PokemonBase : ScriptableObject
 
     [SerializeField] PokemonType type1;
     [SerializeField] PokemonType type2;
+    [SerializeField] AbilityID ability;
 
     //Base stats
     [SerializeField] int maxHp;
@@ -96,6 +97,10 @@ public class PokemonBase : ScriptableObject
     public PokemonType Type2
     {
         get { return type2; }
+    }
+    public AbilityID Ability
+    {
+        get { return ability; }
     }
 
     public int MaxHp

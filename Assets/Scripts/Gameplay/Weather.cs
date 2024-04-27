@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weather : MonoBehaviour
+public class Weather
 {
     public string Name { get; set; }
     public string Description { get; set; }

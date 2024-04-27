@@ -24,7 +24,6 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-
         battleSystem.OnBattleOver += EndBattle;
 
         DialogManager.Instance.OnShowDialog += () =>
@@ -60,6 +59,7 @@ public class GameController : MonoBehaviour
         Instance = this;
         ConditionsDB.Init();
         WeatherDB.Init();
+        AbilitiesDB.Init();
     }
 
     public void StartBattle()

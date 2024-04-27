@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Condition : MonoBehaviour
+public class Condition
 {
     
     public string Name { get; set; }
