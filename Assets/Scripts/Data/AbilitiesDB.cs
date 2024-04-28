@@ -46,7 +46,45 @@ public class AbilitiesDB
                     return move.Base.Type == PokemonType.Normal ? move.Base.Power * 1.2f : move.Base.Power;
                 }
             }
-        }
+        },
+
+        {
+            AbilityID.aftermath,
+            new Ability()
+            {
+                Name = "Aftermath",
+                Description = "Damages the attacker if it knocks out the Pokémon with a move that makes direct contact.",
+                OnContact = (Move move, Pokemon attacker, Pokemon target) => {
+
+                    if(move.Base.HasFlag(MoveFlag.Contact) && target.HP <= 0)
+                    {
+                        target.StatusChanges.Enqueue($"{attacker.Base.Name} was hurt!");
+                        target.UpdateHP(attacker.Base.MaxHp / 4);
+                    }  
+                }
+            }
+        },
+
+        {
+            // I need to think about this and forecast as they have a unique way of working together
+            AbilityID.airlock,
+            new Ability()
+            {
+                Name = "Airlock",
+                Description = "Eliminates the effects of weather.",
+                NegateWeather = true
+            }
+        },
+        {
+            //Will think later
+            AbilityID.analytic,
+            new Ability()
+            {
+                Name = "Analytic",
+                Description = "Boosts the power of the Pokémon’s move if it is the last to act that turn.",
+                
+            }
+        },
 
         
     };

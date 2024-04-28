@@ -22,6 +22,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] List<SecondaryEffects> secEffects;
     [SerializeField] Vector2Int hitRange;
     [SerializeField] int healPercentage;
+    [SerializeField] List<MoveFlag> moveFlags;
 
 
     public string Name
@@ -88,6 +89,10 @@ public class MoveBase : ScriptableObject
     {
         get { return healPercentage; }
     }
+    public List<MoveFlag> MoveFlags
+    {
+        get { return moveFlags; }
+    }
 
     // This will suffer some changes probably due to some moves who get accuracy check every turn.
     public int GetHitTimes()
@@ -118,6 +123,15 @@ public class MoveBase : ScriptableObject
         }
         return hitCount;
     }
+
+    public bool HasFlag(MoveFlag flag)
+    {
+        if (moveFlags != null && moveFlags.Contains(flag))
+            return true;
+
+        return false;
+    }
+
 }
 
 [System.Serializable]
@@ -204,4 +218,9 @@ public enum MoveTarget
 {
     Foe,
     Self
+}
+
+public enum MoveFlag
+{
+    Contact
 }
