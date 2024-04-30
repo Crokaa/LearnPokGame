@@ -30,3 +30,5 @@ MonoBehaviour:
   target: 0
   secEffects: []
   hitRange: {x: 2, y: 5}
+  healPercentage: 0
+  moveFlags: 00000000

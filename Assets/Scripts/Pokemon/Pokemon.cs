@@ -146,7 +146,7 @@ public class Pokemon
                 case 2:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} sharply rose!");
                     break;
-                case 3:
+                case >= 3:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} rose drastically!");
                     break;
                 case -1:
@@ -155,7 +155,7 @@ public class Pokemon
                 case -2:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} harshly fell!");
                     break;
-                case -3:
+                case <= -3:
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} severely fell!");
                     break;
             }
