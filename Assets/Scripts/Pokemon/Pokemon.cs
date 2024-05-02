@@ -138,6 +138,14 @@ public class Pokemon
             var prevBoost = StatBoosts[stat];
             StatBoosts[stat] = Mathf.Clamp(StatBoosts[stat] + boost, -6, 6);
 
+            if (prevBoost == StatBoosts[stat])
+            {
+                if(boost < 0)
+                    StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any lower!");
+                else
+                    StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any higher!");
+            }
+
             switch (boost)
             {
                 case 1:

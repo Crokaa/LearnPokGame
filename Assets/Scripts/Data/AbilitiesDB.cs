@@ -42,7 +42,7 @@ public class AbilitiesDB
 
                     return move.Base.Type == PokemonType.Normal ? PokemonType.Flying : move.Base.Type;
                 },
-                MoveBoost = (Move move) => {
+                MoveBoost = (Move move, Pokemon source) => {
 
                     return move.Base.Type == PokemonType.Normal ? move.Base.Power * 1.2f : move.Base.Power;
                 }
@@ -108,17 +108,14 @@ public class AbilitiesDB
             {
                 Name = "Anger Shell",
                 Description = "When an attack causes its HP to drop to half or less, the Pokémon gets angry. This lowers its Defense and Sp. Def stats but boosts its Attack, Sp. Atk, and Speed stats.",
-                OnDamaged = (Move move, Pokemon attacker, Pokemon target) => {
+                OnDropHalf = (Pokemon attacker, Pokemon target) => {
 
-                    if(target.HP < target.MaxHp / 2)
-                    {
-                        List<StatBoost> boosts = new List<StatBoost> { new StatBoost{stat = Stat.Attack, boost = 1},
+                    List<StatBoost> boosts = new List<StatBoost> { new StatBoost{stat = Stat.Attack, boost = 1},
                         new StatBoost{stat = Stat.SpAttack, boost = 1},
                         new StatBoost{stat = Stat.Speed, boost = 1},
                         new StatBoost{stat = Stat.Defense, boost = -1},
                         new StatBoost{stat = Stat.SpDefense, boost = -1} };
                         target.ApplyBoost(boosts);
-                    }
                 }
 
             }
@@ -165,7 +162,6 @@ public class AbilitiesDB
                         return true;
 
                     return false;
-
                 }
 
             }
@@ -177,13 +173,13 @@ public class AbilitiesDB
             {
                 Name = "Armor Tail",
                 Description = "The mysterious tail covering the Pokémon’s head makes opponents unable to use priority moves against the Pokémon or its allies.",
-                CanUseMove = (Move move, Pokemon target) => {
+                CanUseMove = (Move move, Pokemon source, Pokemon target) => {
 
                     if(move.Base.Priority > 0)
                         return false;
 
+                    source.StatusChanges.Enqueue($"{source.Base.Name} cannot use {move.Base.Name}");
                     return true;
-
                 }
 
             }
@@ -205,9 +201,12 @@ public class AbilitiesDB
             {
                 Name = "As One",
                 Description = "This Ability combines the effects of both Calyrex’s Unnerve Ability and Glastrier’s/Spectrier’s Chilling Neigh/Grim Neigh Ability.",
-                OnKnockOut = (Pokemon source) => {
-                    
-                    source.ApplyBoost( new List<StatBoost> { new StatBoost{ stat = Stat.Attack, boost = 1 } } );
+                OnDamaged = (Move move, Pokemon attacker, Pokemon target) => {
+
+                    if(target.HP <= 0){
+                        if(attacker.StatBoosts[Stat.Attack] < 6)
+                            attacker.ApplyBoost( new List<StatBoost> { new StatBoost{ stat = Stat.Attack, boost = 1 } } );
+                    }
                 }
                 //Implement when berries (items) are implemented too
             }
@@ -219,11 +218,195 @@ public class AbilitiesDB
             {
                 Name = "Aura Break",
                 Description = "The effects of “Aura” Abilities are reversed to lower the power of affected moves.",
-                MoveBoost  = (Move move) => {
-                    
+                MoveBoost  = (Move move, Pokemon source) => {
+
                     return move.Base.Type == PokemonType.Dark || move.Base.Type == PokemonType.Fairy ? move.Base.Power - move.Base.Power * 0.25f : move.Base.Power;
                 }
                 //Cancel fairy and dark auras when implemented
+            }
+        },
+
+        {
+            AbilityID.baddreams,
+            new Ability()
+            {
+                Name = "Bad Dreams",
+                Description = "Damages opposing Pokémon that are asleep.",
+                OnTurnEnd  = (Pokemon source, Pokemon enemy) => {
+
+                    if (enemy.Status.Id == ConditionID.slp){
+                        enemy.UpdateHP(enemy.MaxHp / 8);
+                        enemy.StatusChanges.Enqueue($"The {enemy.Base.Name} is tormented.");
+                    }
+
+                }
+            }
+        },
+
+        {
+            AbilityID.ballfetch,
+            new Ability()
+            {
+                Name = "Ball Fetch",
+                Description = "If the Pokémon is not holding an item, it will fetch the Poké Ball from the first failed throw of the battle.",
+                //Later
+            }
+        },
+
+        {
+            AbilityID.battery,
+            new Ability()
+            {
+                Name = "Battery",
+                Description = "Powers up ally Pokémon’s special moves.",
+                //Later when doubles implemented
+            }
+        },
+
+        {
+            AbilityID.battlearmor,
+            new Ability()
+            {
+                Name = "Battle Armor",
+                Description = "Hard armor protects the Pokémon from critical hits.",
+                CalculateCritical = () => {
+
+                    return 1f;
+                }
+            }
+        },
+
+        {
+            AbilityID.battlebond,
+            new Ability()
+            {
+                Name = "Battle Bond",
+                Description = "When the Pokémon knocks out a target, its bond with its Trainer is strengthened, and its Attack, Sp. Atk, and Speed stats are boosted.",
+                OnDamaged = (Move move, Pokemon attacker, Pokemon target) => {
+
+                    if(Ability.Activated())
+                        return;
+
+                    if(target.HP <= 0 && attacker.StatBoosts[Stat.Attack] != 6 && attacker.StatBoosts[Stat.SpAttack] != 6 && attacker.StatBoosts[Stat.Speed] != 6)
+                    {
+                        List<StatBoost> boosts = new List<StatBoost> { new StatBoost{stat = Stat.Attack, boost = 1},
+                        new StatBoost{stat = Stat.SpAttack, boost = 1},
+                        new StatBoost{stat = Stat.Speed, boost = 1} };
+                        target.ApplyBoost(boosts);
+                        Ability.Activate();
+                    }
+                },
+                BattleEnded = () => {
+                    Ability.EndBattleActivate();
+                }
+            }
+        },
+
+        {
+            AbilityID.beadsofruin,
+            new Ability()
+            {
+                Name = "Beads Of Ruin",
+                Description = "The power of the Pokémon’s ruinous beads lowers the Sp. Def stats of all Pokémon except itself.",
+                //Later
+            }
+        },
+
+        {
+            AbilityID.beastboost,
+            new Ability()
+            {
+                Name = "Beast Boost",
+                Description = "The power of the Pokémon’s ruinous beads lowers the Sp. Def stats of all Pokémon except itself.",
+                OnDamaged = (Move move, Pokemon attacker, Pokemon target) => {
+
+                    if (target.HP <= 0)
+                    {
+                        List<Stat> statToBoost = new List<Stat> { Stat.Attack, Stat.Defense, Stat.SpAttack, Stat.SpDefense, Stat.Speed };
+                        int [] attackerStats = new int[] { attacker.Attack, attacker.Defense, attacker.SpAttack, attacker.SpDefense, attacker.Speed };
+                        int indexHigherStat = 0;
+                        for (int i = 0; i < attackerStats.Length; i++)
+                        {
+                            if (attackerStats[i] > attackerStats[indexHigherStat])
+                                indexHigherStat = i;
+                        }
+
+                        if (attacker.StatBoosts[statToBoost[indexHigherStat]] == 6)
+                            return;
+
+                        target.ApplyBoost( new List<StatBoost> { new StatBoost{ stat = statToBoost[indexHigherStat], boost = 1 } } );
+                    }
+                },
+            }
+        },
+
+        {
+            AbilityID.berserk,
+            new Ability()
+            {
+                Name = "Berserk",
+                Description = "Boosts the Pokémon’s Sp. Atk stat when it takes a hit that causes its HP to drop to half or less.",
+                OnDropHalf = (Pokemon attacker, Pokemon target) => {
+
+                    List<StatBoost> boosts = new List<StatBoost> { new StatBoost{stat = Stat.Attack, boost = 1},
+                        new StatBoost{stat = Stat.SpAttack, boost = 1},
+                        new StatBoost{stat = Stat.Speed, boost = 1},
+                        new StatBoost{stat = Stat.Defense, boost = -1},
+                        new StatBoost{stat = Stat.SpDefense, boost = -1} };
+                    target.ApplyBoost(boosts);
+
+                },
+            }
+        },
+
+        {
+            AbilityID.bigpecks,
+            new Ability()
+            {
+                Name = "Big Pecks",
+                Description = "Prevents the Pokémon from having its Defense stat lowered.",
+                OnBoost = (Dictionary<Stat, int> boosts, Pokemon target, Pokemon source) =>
+                {
+                    // If it's self boost then return
+                    if (source != null && target == source) return;
+
+                    if (boosts.ContainsKey(Stat.Defense) && boosts[Stat.Defense] < 0)
+                    {
+                        boosts.Remove(Stat.Defense);
+
+                        target.StatusChanges.Enqueue($"{target.Base.Name}'s was not lowered");
+                    }
+                },
+            }
+        },
+
+        {
+            AbilityID.blaze,
+            new Ability()
+            {
+                Name = "Blaze",
+                Description = "Powers up Fire-type moves when the Pokémon’s HP is low.",
+                MoveBoost = (Move move, Pokemon source) =>
+                {
+                    return move.Base.Type == PokemonType.Fire && source.HP <= source.MaxHp ? move.Base.Power * 1.5f : move.Base.Power;
+                },
+            }
+        },
+
+        {
+            AbilityID.bulletproof,
+            new Ability()
+            {
+                Name = "Bulletproof",
+                Description = "Protects the Pokémon from ball and bomb moves.",
+                CanUseMove = (Move move, Pokemon source, Pokemon target) => {
+
+                    if(move.Base.Priority > 0)
+                        return false;
+
+                    source.StatusChanges.Enqueue($"{source.Base.Name} cannot use {move.Base.Name}");
+                    return true;
+                }
             }
         },
     };

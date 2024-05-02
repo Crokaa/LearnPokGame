@@ -31,3 +31,4 @@ MonoBehaviour:
   secEffects: []
   hitRange: {x: 0, y: 0}
   healPercentage: 50
+  moveFlags: 

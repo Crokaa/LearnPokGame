@@ -222,5 +222,5 @@ public enum MoveTarget
 
 public enum MoveFlag
 {
-    Contact
+    Contact, Ball, Bomb
 }
