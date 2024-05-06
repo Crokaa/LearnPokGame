@@ -8,8 +8,10 @@ public class Character : MonoBehaviour
 
     private CharacterAnimator animator;
     public float moveSpeed;
+    public Vector3 lookingAt;
+
     public bool IsMoving { get; set; }
-    public float offsetY { get; private set; } = 0.3f;
+    public float OffsetY { get; private set; } = 0.3f;
 
     private void Awake()
     {
@@ -37,6 +39,8 @@ public class Character : MonoBehaviour
 
         animator.MoveX = Mathf.Clamp(moveVector.x, -1f, 1f);
         animator.MoveY = Mathf.Clamp(moveVector.y, -1f, 1f);
+
+        lookingAt = new Vector3(Mathf.Clamp(moveVector.x, -1f, 1f),  Mathf.Clamp(moveVector.y, -1f, 1f));
 
         var targetPos = transform.position;
         targetPos.x += moveVector.x;
@@ -106,6 +110,7 @@ public class Character : MonoBehaviour
         {
             animator.MoveX = Mathf.Clamp(xdiff, -1f, 1f);
             animator.MoveY = Mathf.Clamp(ydiff, -1f, 1f);
+            
         }
         else
             Debug.Log("Error in LookTowards: Can't look diagonally");

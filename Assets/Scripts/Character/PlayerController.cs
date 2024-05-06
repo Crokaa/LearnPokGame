@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISavable
 {
     [SerializeField] string name;
     private Vector2 input;
@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
     private void OnMoveOver()
     {
 
-        var colliders = Physics2D.OverlapCircleAll(transform.position - new Vector3(0, character.offsetY), 0.2f, GameLayers.Instance.TriggerableLayers);
+        var colliders = Physics2D.OverlapCircleAll(transform.position - new Vector3(0, character.OffsetY), 0.2f, GameLayers.Instance.TriggerableLayers);
 
         foreach (var collider in colliders)
         {
@@ -85,8 +85,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    internal void LooksTowards(Vector3 position)
+    public void LookTowards(Vector3 position)
     {
         character.LookTowards(position);
+    }
+
+    public object CaptureState()
+    {
+
+        float [] data = new float[] {transform.position.x, transform.position.y, character.lookingAt.x, character.lookingAt.y};
+
+        return data;
+    }
+
+    public void RestoreState(object state)
+    {
+        float [] data = (float [])state;
+        
+        transform.position = new Vector3(data[0], data[1]);
+        character.LookTowards(transform.position + new Vector3(data[2], data[3]));
     }
 }

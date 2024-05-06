@@ -283,9 +283,9 @@ public class Pokemon
         float defense = move.Base.Category == MoveCategory.Special ? SpDefense : Defense;
 
         float stab = attacker.Base.Type1 == move.Base.Type || attacker.Base.Type2 == move.Base.Type ? 1.5f : 1f;
-        stab = attacker.Ability.OnApplyStab?.Invoke(stab) ?? stab;
+        //stab = attacker.Ability.OnApplyStab?.Invoke(stab) ?? stab;
 
-        float modifiers = UnityEngine.Random.Range(85, 100) / 100 * effectiveness * critical * weatherMod;
+        float modifiers = UnityEngine.Random.Range(85, 100) / 100.0f * effectiveness * critical * weatherMod;
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
         int damage = Mathf.FloorToInt(d * modifiers);

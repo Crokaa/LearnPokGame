@@ -116,6 +116,12 @@ public class GameController : MonoBehaviour
 
         if (state == GameState.FreeRoam)
         {
+
+            if(Input.GetKeyDown(KeyCode.K))
+                SavingSystem.Instance.Save("saveSlot1");
+            else if (Input.GetKeyDown(KeyCode.L))
+                SavingSystem.Instance.Load("saveSlot1");
+
             time += Time.deltaTime;
 
             if (time > 10)
