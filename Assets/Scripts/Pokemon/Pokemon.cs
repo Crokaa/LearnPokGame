@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Unity.Collections;
+using UnityEditor.Build;
 using UnityEngine;
 
 [System.Serializable]
@@ -144,6 +145,8 @@ public class Pokemon
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any lower!");
                 else
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any higher!");
+                
+                return;
             }
 
             switch (boost)
@@ -343,6 +346,46 @@ public class Pokemon
         var heal = damage == 1 ? 1 : Mathf.FloorToInt(damage * (move.Base.HealPercentage / 100f));
         HealHP(heal);
     }
+
+    public Pokemon (PokemonSaveData saveData) {
+
+        _base = PokemonDB.GetPokemonByName(saveData.name);
+        level = saveData.level;
+        HP = saveData.hp;
+        Exp = saveData.exp;
+
+        if (saveData.statusID != null)
+            Status = ConditionsDB.Conditions[saveData.statusID.Value];
+        else
+            Status = null;
+
+        Moves = saveData.moves.Select(m => new Move(m)).ToList();
+
+        CalculateStats();
+
+        StatusChanges = new Queue<string>();
+        WeatherDamages = new Queue<string>();
+
+        //ability will probably be saved later since pokemons can get different abilities and they WILL be changable
+        Ability = AbilitiesDB.Abilities[Base.Ability];
+        ResetStatBoost();
+
+        VolatileStatus = null;
+    }
+
+    public PokemonSaveData GetPokemonSaveData() {
+
+        var saveData = new PokemonSaveData {
+            name = Base.Name,
+            level = Level,
+            hp = HP,
+            exp = Exp,
+            statusID = Status?.Id,
+            moves = Moves.Select(m => m.GetMoveSaveData()).ToList()
+        };
+
+        return saveData;
+    }
 }
 
 public class DamageDetails
@@ -353,4 +396,15 @@ public class DamageDetails
     public float Critical { get; set; }
     public float Effectiveness { get; set; }
     public string WeatherEffectMessage { get; set; }
+}
+
+[System.Serializable]
+public class PokemonSaveData
+{
+    public string name;
+    public int level;
+    public int hp;
+    public int exp;
+    public ConditionID? statusID;
+    public List<MoveSaveData> moves;
 }

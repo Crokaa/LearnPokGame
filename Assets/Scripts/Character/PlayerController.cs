@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
+using System.Linq;
 
 public class PlayerController : MonoBehaviour, ISavable
 {
@@ -93,16 +95,31 @@ public class PlayerController : MonoBehaviour, ISavable
     public object CaptureState()
     {
 
-        float [] data = new float[] {transform.position.x, transform.position.y, character.lookingAt.x, character.lookingAt.y};
+        var saveData = new PlayerSaveData {
+            position = new float [] {transform.position.x, transform.position.y},
+            lookingAt = new float [] {character.lookingAt.x, character.lookingAt.y},
+            pokParty = GetComponent<PokemonParty>().Pokemons.Select(p => p.GetPokemonSaveData()).ToList()
+        };
 
-        return data;
+        return saveData;
     }
 
     public void RestoreState(object state)
     {
-        float [] data = (float [])state;
-        
-        transform.position = new Vector3(data[0], data[1]);
-        character.LookTowards(transform.position + new Vector3(data[2], data[3]));
+        var saveData = (PlayerSaveData) state;
+
+        transform.position = new Vector3(saveData.position[0], saveData.position[1]);
+        character.LookTowards(transform.position + new Vector3(saveData.lookingAt[0], saveData.lookingAt[1]));
+
+        GetComponent<PokemonParty>().Pokemons = saveData.pokParty.Select(p => new Pokemon(p)).ToList();
     }
 }
+
+[System.Serializable]
+public class PlayerSaveData {
+
+    public float[] position;
+    public  float[] lookingAt;
+    public List<PokemonSaveData> pokParty;
+}
+

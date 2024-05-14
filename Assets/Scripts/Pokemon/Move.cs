@@ -12,4 +12,27 @@ public class Move
         Base = mBase;
         Pp = mBase.Pp;
     }
+
+    public Move(MoveSaveData saveData)
+    {
+        Base = MovesDB.GetMoveByName(saveData.name);
+        Pp = saveData.pp;
+    }
+
+    public MoveSaveData GetMoveSaveData()
+    {
+        var saveData = new MoveSaveData
+        {
+            name = Base.Name,
+            pp = Pp
+        };
+
+        return saveData;
+    }
+}
+[System.Serializable]
+public class MoveSaveData
+{
+    public string name;
+    public int pp;
 }

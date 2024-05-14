@@ -57,6 +57,8 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        PokemonDB.Init();
+        MovesDB.Init();
         ConditionsDB.Init();
         WeatherDB.Init();
         AbilitiesDB.Init();
