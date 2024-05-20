@@ -20,6 +20,7 @@ public class Ability
     public Func<Move, Pokemon, Pokemon, bool> CanUseMove { get; set; }
     public Action<Pokemon, Pokemon> OnTurnEnd { get; set; }
     public Action<Pokemon, Pokemon> OnDropHalf { get;  set; }
+    public Action<Pokemon> OnBerryEat { get; set; }
     public Action<Dictionary<Stat, int>, Pokemon, Pokemon> OnBoost { get;  set; }
     //This will be used on both attacker and defender. The defender will win because it will be calculated after the attacker.
     public Func<float> CalculateCritical { get; set; }
@@ -28,7 +29,6 @@ public class Ability
 
     // All of these are used because of Battle Bond, but this way I can create new Abilities that act the same way
     public Action BattleEnded { get; set; }
-    
 
     static bool activated = false;
 

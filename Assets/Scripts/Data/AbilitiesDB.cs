@@ -409,8 +409,41 @@ public class AbilitiesDB
                 }
             }
         },
+
+        {
+            AbilityID.cheekpouch,
+            new Ability()
+            {
+                Name = "Cheek Pouch",
+                Description = "The Pokémon’s HP is restored when it eats any Berry, in addition to the Berry’s usual effect.",
+                OnBerryEat = (Pokemon source) => {
+
+                    source.HealHP(source.MaxHp / 3);
+                }
+            }
+        },
+
+        {
+            AbilityID.chillingneigh,
+            new Ability()
+            {
+                Name = "Chilling Neigh",
+                Description = "When the Pokémon knocks out a target, it utters a chilling neigh, which boosts its Attack stat.",
+                OnDamaged = (Move move, Pokemon attacker, Pokemon target) => {
+
+                    if(target.HP <= 0){
+                        if(attacker.StatBoosts[Stat.Attack] < 6)
+                            attacker.ApplyBoost( new List<StatBoost> { new StatBoost{ stat = Stat.Attack, boost = 1 } } );
+                    }
+                }
+            }
+        },
+
+    
     };
+
 }
+
 
 public enum AbilityID
 {

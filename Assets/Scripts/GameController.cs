@@ -119,6 +119,7 @@ public class GameController : MonoBehaviour
         if (state == GameState.FreeRoam)
         {
 
+            // Will be changed to menu saving
             if(Input.GetKeyDown(KeyCode.K))
                 SavingSystem.Instance.Save("saveSlot1");
             else if (Input.GetKeyDown(KeyCode.L))
@@ -141,6 +142,13 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.Dialog)
             DialogManager.Instance.HandleUpdate();
+
+        //Just to speed things up while testing
+        if (Input.GetKeyDown(KeyCode.P))
+                Time.timeScale = 2f;
+            else if (Input.GetKeyDown(KeyCode.O))
+                Time.timeScale = 1f;
+
     }
 
     public void SetCurrentScene(SceneDetails currScene)
