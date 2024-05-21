@@ -9,14 +9,7 @@ public class PartyMemberUI : MonoBehaviour
     [SerializeField] Text nameText;
     [SerializeField] Text levelText;
     [SerializeField] HPBar hpBar;
-
-    Color colorHightlighted;
-
     Pokemon pokemon;
-
-    private void Start() {
-        colorHightlighted = GlobalSettings.Instance.HighlightedColor;
-    }
 
     public void SetData(Pokemon pokemon)
     {
@@ -30,7 +23,7 @@ public class PartyMemberUI : MonoBehaviour
     public void SetSelected(bool selected)
     {
         if (selected)
-            nameText.color = colorHightlighted;
+            nameText.color = GlobalSettings.Instance.HighlightedColor;
 
         else
             nameText.color = Color.black;

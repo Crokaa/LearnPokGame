@@ -12,7 +12,6 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject menu;
     List<Text> menuItems;
     int currentSelected;
-    Color highlightedColor;
     public Action<int> OnSelected;
     public Action GoBack;
 
@@ -20,7 +19,6 @@ public class MenuController : MonoBehaviour
     {
         currentSelected = 0;
         menuItems = menu.GetComponentsInChildren<Text>().ToList();
-        highlightedColor = GlobalSettings.Instance.HighlightedColor;
     }
 
     public void OpenMenu()
@@ -60,7 +58,7 @@ public class MenuController : MonoBehaviour
         {
 
             if (i == currentSelected)
-                menuItems[i].color = highlightedColor;
+                menuItems[i].color = GlobalSettings.Instance.HighlightedColor;
 
             else
                 menuItems[i].color = Color.black;

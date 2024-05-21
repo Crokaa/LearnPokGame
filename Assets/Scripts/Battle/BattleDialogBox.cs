@@ -20,11 +20,6 @@ public class BattleDialogBox : MonoBehaviour
     [SerializeField] Text typeText;
     [SerializeField] Text yesText;
     [SerializeField] Text noText;
-    Color highlightedColor;
-
-    private void Start () {
-        highlightedColor = GlobalSettings.Instance.HighlightedColor;
-    }
 
 
     public void SetDialog(string dialog)
@@ -74,7 +69,7 @@ public class BattleDialogBox : MonoBehaviour
         {
 
             if (i == selectedAction)
-                actionTexts[i].color = highlightedColor;
+                actionTexts[i].color = GlobalSettings.Instance.HighlightedColor;
             else
                 actionTexts[i].color = Color.black;
         }
@@ -100,7 +95,7 @@ public class BattleDialogBox : MonoBehaviour
         {
 
             if (i == selectedMove)
-                moveTexts[i].color = highlightedColor;
+                moveTexts[i].color = GlobalSettings.Instance.HighlightedColor;
             else
                 moveTexts[i].color = Color.black;
         }
@@ -122,13 +117,13 @@ public class BattleDialogBox : MonoBehaviour
 
         if (yesSelected)
         {
-            yesText.color = highlightedColor;
+            yesText.color = GlobalSettings.Instance.HighlightedColor;
             noText.color = Color.black;
         }
         else
         {
             yesText.color = Color.black;
-            noText.color = highlightedColor;
+            noText.color = GlobalSettings.Instance.HighlightedColor;
         }
     }
 }

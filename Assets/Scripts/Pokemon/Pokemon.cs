@@ -289,9 +289,10 @@ public class Pokemon
         //stab = attacker.Ability.OnApplyStab?.Invoke(stab) ?? stab;
 
         float modifiers = UnityEngine.Random.Range(85, 100) / 100.0f * effectiveness * critical * weatherMod;
+
         float a = (2 * attacker.Level + 10) / 250f;
         float d = a * move.Base.Power * ((float)attack / defense) + 2;
-        int damage = Mathf.FloorToInt(d * modifiers);
+        int damage = Mathf.FloorToInt(d * modifiers) == 0 ? 1 : Mathf.FloorToInt(d * modifiers);
 
         var damageDetails = new DamageDetails()
         {   

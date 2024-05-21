@@ -12,15 +12,9 @@ public class MoveSelectionUI : MonoBehaviour
     [SerializeField] Text moveAccuracy;
 
     int currentSelection = 0;
-    Color highlightedColor;
     List<int> movesAccuracy = new List<int>();
     List<int> movesPower = new List<int>();
     List<string> movesDescription = new List<string>();
-
-
-    private void Start () {
-        highlightedColor = GlobalSettings.Instance.HighlightedColor;
-    }
 
     public void SetMoveData(List<MoveBase> currentMoves, MoveBase newMove)
     {
@@ -72,7 +66,7 @@ public class MoveSelectionUI : MonoBehaviour
 
             if (i == currentSelection)
             {
-                moveTexts[i].color = highlightedColor;
+                moveTexts[i].color = GlobalSettings.Instance.HighlightedColor;
                 moveDescription.text = movesDescription[currentSelection];
                 movePower.text = "POWER " + movesPower[currentSelection];
                 moveAccuracy.text = "ACCURACY " + movesAccuracy[currentSelection];

@@ -25,10 +25,8 @@ public class BattleSystem : MonoBehaviour
     public event Action<bool> OnBattleOver;
 
     BattleState state;
-    BattleState? prevState;
     int currentAction;
     int currentMove;
-    int currentMember;
     bool aboutToUseChoise = true;
 
     // These 3 are used for running. Even after speed drops the formula uses the original speed.
@@ -51,7 +49,6 @@ public class BattleSystem : MonoBehaviour
         this.wildPokemon = wildPokemon;
         currentAction = 0;
         currentMove = 0;
-        currentMember = 0;
         player = playerParty.GetComponent<PlayerController>();
         isTrainerBattle = false;
         field = new Field();
@@ -72,7 +69,6 @@ public class BattleSystem : MonoBehaviour
         isTrainerBattle = true;
         currentAction = 0;
         currentMove = 0;
-        currentMember = 0;
         field = new Field();
         if (outsideWeather is not null)
             field.SetWeather(outsideWeather.Id);
@@ -155,6 +151,7 @@ public class BattleSystem : MonoBehaviour
 
     void OpenPartyScreen()
     {
+        partyScreen.CalledFrom = state;
         state = BattleState.PartyScreen;
         partyScreen.SetPartyData(playerParty.Pokemons);
         partyScreen.gameObject.SetActive(true);
@@ -241,7 +238,7 @@ public class BattleSystem : MonoBehaviour
             if (battleAction == BattleAction.SwitchPokemon)
             {
 
-                var selectedPokemon = playerParty.Pokemons[currentMember];
+                var selectedPokemon = partyScreen.SelectedPokemon;
                 yield return SwitchPokemon(selectedPokemon);
 
             }
@@ -382,7 +379,7 @@ public class BattleSystem : MonoBehaviour
 
                 }
 
-                if(move.Base.HealPercentage > 0)
+                if (move.Base.HealPercentage > 0)
                 {
                     sourceUnit.Pokemon.ReceiveHP(move, damage);
                     yield return sourceUnit.Hud.UpdateHP();
@@ -782,7 +779,6 @@ public class BattleSystem : MonoBehaviour
             {
 
                 //Pokemon
-                prevState = state;
                 OpenPartyScreen();
             }
             else if (currentAction == 3)
@@ -840,51 +836,10 @@ public class BattleSystem : MonoBehaviour
 
     void HandlePartyScreenSelection()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (currentMember < playerParty.Pokemons.Count - 1 && currentMember != 1 && currentMember != 3)
-                ++currentMember;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (currentMember > 0 && currentMember != 2 && currentMember != 4)
-                --currentMember;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (currentMember < playerParty.Pokemons.Count - 2)
-                currentMember += 2;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            if (currentMember > 1)
-                currentMember -= 2;
-        }
 
-        partyScreen.UpdateMemberSelection(currentMember);
-
-
-        if (Input.GetKeyDown(KeyCode.X))
+        Action onSelected = () =>
         {
-            partyScreen.gameObject.SetActive(false);
-            dialogBox.EnableDialogText(true);
-
-            if (playerUnit.Pokemon.HP <= 0)
-            {
-                partyScreen.SetMessageText("You have to choose a healthy pokemon to continue.");
-                return;
-            }
-            if (prevState == BattleState.AboutToUse)
-            {
-                prevState = null;
-                StartCoroutine(SendNextTrainerPokemon());
-            }
-            else
-                ActionSelection();
-        }
-        else if (Input.GetKeyDown(KeyCode.Z))
-        {
-            var selectedMember = playerParty.Pokemons[currentMember];
+            var selectedMember =  partyScreen.SelectedPokemon;
             if (selectedMember.HP <= 0)
             {
                 partyScreen.SetMessageText("You can't send out a fainted Pokemon.");
@@ -898,17 +853,41 @@ public class BattleSystem : MonoBehaviour
             }
 
             partyScreen.gameObject.SetActive(false);
-            if (prevState == BattleState.ActionSelection)
+            if (partyScreen.CalledFrom == BattleState.ActionSelection)
             {
-                prevState = null;
                 StartCoroutine(RunTurns(BattleAction.SwitchPokemon));
             }
             else
             {
                 state = BattleState.Busy;
-                StartCoroutine(SwitchPokemon(selectedMember));
+                bool isTrainerAboutToUse = partyScreen.CalledFrom == BattleState.AboutToUse;
+                StartCoroutine(SwitchPokemon(selectedMember, isTrainerAboutToUse));
             }
-        }
+        };
+
+        Action goBack = () =>
+        {
+
+            if (playerUnit.Pokemon.HP <= 0)
+            {
+                partyScreen.SetMessageText("You have to choose a healthy pokemon.");
+                return;
+            }
+
+            partyScreen.gameObject.SetActive(false);
+            dialogBox.EnableDialogText(true);
+
+            if (partyScreen.CalledFrom == BattleState.AboutToUse)
+            {
+                StartCoroutine(SendNextTrainerPokemon());
+            }
+            else
+                ActionSelection();
+
+            partyScreen.CalledFrom = null;
+        };
+
+        partyScreen.HandleUpdate(onSelected, goBack);
     }
 
     void HandleAboutToUse()
@@ -925,7 +904,6 @@ public class BattleSystem : MonoBehaviour
             if (aboutToUseChoise)
             {
                 // Yes option
-                prevState = state;
                 OpenPartyScreen();
             }
             else
@@ -938,13 +916,13 @@ public class BattleSystem : MonoBehaviour
         {
 
             // Same as no option
-            prevState = state;
+            partyScreen.CalledFrom = state;
             dialogBox.EnableChoiceBox(false);
             StartCoroutine(SendNextTrainerPokemon());
         }
     }
 
-    IEnumerator SwitchPokemon(Pokemon newPokemon)
+    IEnumerator SwitchPokemon(Pokemon newPokemon, bool isTrainerAboutToUse = false)
     {
 
         if (playerUnit.Pokemon.HP > 0)
@@ -961,16 +939,13 @@ public class BattleSystem : MonoBehaviour
         dialogBox.SetMoveNames(newPokemon.Moves);
         currentAction = 0;
         currentMove = 0;
-        currentMember = 0;
         yield return dialogBox.TypeDialog($"Go {newPokemon.Base.Name}!");
 
-        if (prevState == null)
-            state = BattleState.RunningTurn;
-        else if (prevState == BattleState.AboutToUse)
-        {
-            prevState = null;
+
+        if (isTrainerAboutToUse)
             StartCoroutine(SendNextTrainerPokemon());
-        }
+        else
+            state = BattleState.RunningTurn;
 
     }
 

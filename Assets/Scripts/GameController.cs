@@ -1,15 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused, Menu }
+public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused, Menu, PartyScreen }
 
 public class GameController : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] Camera worldCamera;
+    [SerializeField] PartyScreen partyScreen;
 
     GameState state;
     GameState stateBeforePause;
@@ -66,6 +68,8 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        partyScreen.Init();
 
         menuController = GetComponent<MenuController>();
 
@@ -134,6 +138,9 @@ public class GameController : MonoBehaviour
                 break;
             case 1:
                 //Pokemon Party
+
+                state = GameState.PartyScreen;
+               
                 break;
             case 2:
                 //Bag
@@ -159,12 +166,12 @@ public class GameController : MonoBehaviour
                 state = GameState.Menu;
                 menuController.OpenMenu();
             }
-            
+
             time += Time.deltaTime;
 
             if (time > 10)
             {
-                currWeatherOutside = WeatherDB.Weathers.ElementAt(Random.Range(0, WeatherDB.Weathers.Count)).Value;
+                currWeatherOutside = WeatherDB.Weathers.ElementAt(UnityEngine.Random.Range(0, WeatherDB.Weathers.Count)).Value;
                 time = 0;
                 Debug.Log("Weather changed to " + currWeatherOutside.Id);
             }
@@ -179,7 +186,22 @@ public class GameController : MonoBehaviour
             DialogManager.Instance.HandleUpdate();
         else if (state == GameState.Menu)
             menuController.HandleUpdate();
+        else if (state == GameState.PartyScreen)
+        {
+            partyScreen.gameObject.SetActive(true);
+            partyScreen.SetPartyData(playerController.GetComponent<PokemonParty>().Pokemons);
+             Action onSelected = () =>
+                {
+                    //Open pokemon summary
+                };
+                Action goBack = () =>
+                {
+                    partyScreen.gameObject.SetActive(false);
+                    state = GameState.Menu;
+                };
 
+            partyScreen.HandleUpdate(onSelected, goBack);
+        }
         //Just to speed things up while testing
         if (Input.GetKeyDown(KeyCode.P))
             Time.timeScale = 2f;
