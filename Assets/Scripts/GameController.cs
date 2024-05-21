@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused }
+public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused, Menu }
 
 public class GameController : MonoBehaviour
 {
@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
     public SceneDetails PrevScene { get; private set; }
     //this will be removed later, I'm just using it for testing
     float time = 0;
+    MenuController menuController;
 
     public static GameController Instance { get; private set; }
 
@@ -38,6 +39,14 @@ public class GameController : MonoBehaviour
             if (state == GameState.Dialog)
                 state = GameState.FreeRoam;
         };
+
+        menuController.GoBack += () =>
+        {
+            state = GameState.FreeRoam;
+            menuController.CloseMenu();
+        };
+
+        menuController.OnSelected += MenuSelection;
     }
 
     public void PauseGame(bool pause)
@@ -57,6 +66,9 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        menuController = GetComponent<MenuController>();
+
         PokemonDB.Init();
         MovesDB.Init();
         ConditionsDB.Init();
@@ -113,18 +125,41 @@ public class GameController : MonoBehaviour
         worldCamera.gameObject.SetActive(true);
     }
 
+    void MenuSelection(int selected)
+    {
+        switch (selected)
+        {
+            case 0:
+                //Pokedex
+                break;
+            case 1:
+                //Pokemon Party
+                break;
+            case 2:
+                //Bag
+                break;
+            case 3:
+                SavingSystem.Instance.Save("saveSlot1");
+                break;
+            case 4:
+                SavingSystem.Instance.Load("saveSlot1");
+                break;
+
+        }
+    }
+
     private void Update()
     {
 
         if (state == GameState.FreeRoam)
         {
 
-            // Will be changed to menu saving
-            if(Input.GetKeyDown(KeyCode.K))
-                SavingSystem.Instance.Save("saveSlot1");
-            else if (Input.GetKeyDown(KeyCode.L))
-                SavingSystem.Instance.Load("saveSlot1");
-
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                state = GameState.Menu;
+                menuController.OpenMenu();
+            }
+            
             time += Time.deltaTime;
 
             if (time > 10)
@@ -142,12 +177,14 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.Dialog)
             DialogManager.Instance.HandleUpdate();
+        else if (state == GameState.Menu)
+            menuController.HandleUpdate();
 
         //Just to speed things up while testing
         if (Input.GetKeyDown(KeyCode.P))
-                Time.timeScale = 2f;
-            else if (Input.GetKeyDown(KeyCode.O))
-                Time.timeScale = 1f;
+            Time.timeScale = 2f;
+        else if (Input.GetKeyDown(KeyCode.O))
+            Time.timeScale = 1f;
 
     }
 

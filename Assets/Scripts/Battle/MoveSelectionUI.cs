@@ -6,17 +6,21 @@ using UnityEngine.UI;
 
 public class MoveSelectionUI : MonoBehaviour
 {
-    [SerializeField] Color highlightedColor;
     [SerializeField] List<Text> moveTexts;
     [SerializeField] Text moveDescription;
     [SerializeField] Text movePower;
     [SerializeField] Text moveAccuracy;
 
     int currentSelection = 0;
+    Color highlightedColor;
     List<int> movesAccuracy = new List<int>();
     List<int> movesPower = new List<int>();
     List<string> movesDescription = new List<string>();
 
+
+    private void Start () {
+        highlightedColor = GlobalSettings.Instance.HighlightedColor;
+    }
 
     public void SetMoveData(List<MoveBase> currentMoves, MoveBase newMove)
     {
