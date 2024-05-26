@@ -12,8 +12,8 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject menu;
     List<Text> menuItems;
     int currentSelected;
-    public Action<int> OnSelected;
-    public Action GoBack;
+    public Action<int> onSelected;
+    public Action goBack;
 
     void Start()
     {
@@ -42,9 +42,9 @@ public class MenuController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.UpArrow))
             currentSelected = currentSelected == 0 ? menuItems.Count - 1 : currentSelected - 1;
         else if (Input.GetKeyDown(KeyCode.X) || (Input.GetKeyDown(KeyCode.Z) && currentSelected == menuItems.Count - 1))
-            GoBack.Invoke();
+            goBack.Invoke();
         else if(Input.GetKeyDown(KeyCode.Z))
-            OnSelected.Invoke(currentSelected);
+            onSelected.Invoke(currentSelected);
 
 
         if (prevSelected != currentSelected)

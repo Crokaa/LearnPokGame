@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused, Menu, PartyScreen }
+public enum GameState { FreeRoam, Battle, Dialog, Cutscene, Paused, Menu, PartyScreen, Bag }
 
 public class GameController : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] Camera worldCamera;
     [SerializeField] PartyScreen partyScreen;
+    [SerializeField] InventoryController inventory;
 
     GameState state;
     GameState stateBeforePause;
@@ -42,13 +43,13 @@ public class GameController : MonoBehaviour
                 state = GameState.FreeRoam;
         };
 
-        menuController.GoBack += () =>
+        menuController.goBack += () =>
         {
             state = GameState.FreeRoam;
             menuController.CloseMenu();
         };
 
-        menuController.OnSelected += MenuSelection;
+        menuController.onSelected += MenuSelection;
     }
 
     public void PauseGame(bool pause)
@@ -138,12 +139,11 @@ public class GameController : MonoBehaviour
                 break;
             case 1:
                 //Pokemon Party
-
                 state = GameState.PartyScreen;
-               
                 break;
             case 2:
                 //Bag
+                state = GameState.Bag;
                 break;
             case 3:
                 SavingSystem.Instance.Save("saveSlot1");
@@ -190,18 +190,28 @@ public class GameController : MonoBehaviour
         {
             partyScreen.gameObject.SetActive(true);
             partyScreen.SetPartyData(playerController.GetComponent<PokemonParty>().Pokemons);
-             Action onSelected = () =>
-                {
-                    //Open pokemon summary
-                };
-                Action goBack = () =>
-                {
-                    partyScreen.gameObject.SetActive(false);
-                    state = GameState.Menu;
-                };
+            Action onSelected = () =>
+               {
+                   //Open pokemon summary
+               };
+            Action goBack = () =>
+            {
+                partyScreen.gameObject.SetActive(false);
+                state = GameState.Menu;
+            };
 
             partyScreen.HandleUpdate(onSelected, goBack);
         }
+        else if (state == GameState.Bag) {
+            inventory.gameObject.SetActive(true);
+            Action goBack = () => {
+                inventory.gameObject.SetActive(false);
+                state = GameState.Menu;
+            };
+
+            inventory.HandleUpdate(goBack);
+        }
+
         //Just to speed things up while testing
         if (Input.GetKeyDown(KeyCode.P))
             Time.timeScale = 2f;
