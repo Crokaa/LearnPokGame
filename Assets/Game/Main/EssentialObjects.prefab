@@ -4770,6 +4770,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PartyScreen
       objectReference: {fileID: 0}
+    - target: {fileID: 6105849013594828813, guid: f6ff1aa9471f30b4f807dabdf396c612, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8197570330793571643, guid: f6ff1aa9471f30b4f807dabdf396c612, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5242,6 +5246,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1617515087020142101}
     m_Modifications:
+    - target: {fileID: 2023290615107477660, guid: 307e4271a786f584c81c7a725cf136f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2919504121335852692, guid: 307e4271a786f584c81c7a725cf136f4, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -5322,6 +5330,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5583120645696896178, guid: 307e4271a786f584c81c7a725cf136f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7659215188690209192, guid: 307e4271a786f584c81c7a725cf136f4, type: 3}
       propertyPath: m_Name
       value: UI Canvas
@@ -5334,6 +5346,10 @@ PrefabInstance:
       propertyPath: downArrow
       value: 
       objectReference: {fileID: 6533924448488643253}
+    - target: {fileID: 8186302680885552394, guid: 307e4271a786f584c81c7a725cf136f4, type: 3}
+      propertyPath: partyScreen
+      value: 
+      objectReference: {fileID: 6459314414397176054}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

@@ -888,7 +888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &155335678926478880
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1045,6 +1045,7 @@ MonoBehaviour:
   itemDescription: {fileID: 7526877472280681816}
   upArrow: {fileID: 5433535726594307814}
   downArrow: {fileID: 3795734328460870265}
+  partyScreen: {fileID: 3731688077556412428, guid: f6ff1aa9471f30b4f807dabdf396c612, type: 3}
 --- !u!1 &2854133323333670217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2856,7 +2857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8168355427557669492
 RectTransform:
   m_ObjectHideFlags: 0

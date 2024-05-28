@@ -11,6 +11,7 @@ public class PartyScreen : MonoBehaviour
 
     PartyMemberUI[] memberSlots;
     List<Pokemon> pokemons;
+    PokemonParty party;
     int selected = 0;
     //Party screen can be called from different states like ActionSeelction, RunningTurn, AboutToUse
     public BattleState? CalledFrom { get; set; }
@@ -19,13 +20,17 @@ public class PartyScreen : MonoBehaviour
     public void Init()
     {
         memberSlots = GetComponentsInChildren<PartyMemberUI>();
+        party = GetPlayerParty();
+        SetPartyData();
+
+        party.OnUpdated += SetPartyData;
     }
 
     public void HandleUpdate(Action onSelected, Action goBack)
     {
-
         int prevSelected = selected;
 
+        Debug.Log(memberSlots.Length);
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             if (selected < pokemons.Count - 1 && selected != 1 && selected != 3)
@@ -47,11 +52,11 @@ public class PartyScreen : MonoBehaviour
                 selected -= 2;
         }
 
-        if (prevSelected != selected)
-            UpdateMemberSelection(selected);
+        UpdateMemberSelection(selected);
 
         if (Input.GetKeyDown(KeyCode.X))
         {
+            selected = 0;
             goBack?.Invoke();
         }
         else if (Input.GetKeyDown(KeyCode.Z))
@@ -60,15 +65,21 @@ public class PartyScreen : MonoBehaviour
         }
     }
 
-    public void SetPartyData(List<Pokemon> pokemons)
+    public static PokemonParty GetPlayerParty()
     {
-        this.pokemons = pokemons;
+        return FindAnyObjectByType<PlayerController>().GetComponent<PokemonParty>();
+    }
+
+    public void SetPartyData()
+    {
+        pokemons = party.Pokemons;
 
         for (int i = 0; i < memberSlots.Length; i++)
         {
 
             if (i < pokemons.Count)
             {
+                memberSlots[i].gameObject.SetActive(true);
                 memberSlots[i].SetData(pokemons[i]);
             }
             else
@@ -82,9 +93,8 @@ public class PartyScreen : MonoBehaviour
         UpdateMemberSelection(selected);
     }
 
-    public void UpdateMemberSelection(int selectedMember)
+    private void UpdateMemberSelection(int selectedMember)
     {
-
         for (int i = 0; i < pokemons.Count; i++)
         {
             if (i == selectedMember)
@@ -96,7 +106,6 @@ public class PartyScreen : MonoBehaviour
 
     public void SetMessageText(string message)
     {
-
         messageText.text = message;
     }
 }

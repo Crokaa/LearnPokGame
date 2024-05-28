@@ -189,7 +189,6 @@ public class GameController : MonoBehaviour
         else if (state == GameState.PartyScreen)
         {
             partyScreen.gameObject.SetActive(true);
-            partyScreen.SetPartyData(playerController.GetComponent<PokemonParty>().Pokemons);
             Action onSelected = () =>
                {
                    //Open pokemon summary

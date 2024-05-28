@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ public class PokemonParty : MonoBehaviour
 {
 
     [SerializeField] List<Pokemon> pokemons;
+    public event Action OnUpdated;
 
     public List<Pokemon> Pokemons
     {
@@ -15,7 +17,7 @@ public class PokemonParty : MonoBehaviour
             return pokemons;
         }
 
-        set 
+        set
         {
             pokemons = value;
         }
@@ -36,10 +38,15 @@ public class PokemonParty : MonoBehaviour
         return pokemons.Where(x => x.HP > 0).FirstOrDefault();
     }
 
-    public void AddPokemon(Pokemon newPokemon) {
+    public void AddPokemon(Pokemon newPokemon)
+    {
 
-        if(pokemons.Count < 6)
+        if (pokemons.Count < 6)
+        {
             pokemons.Add(newPokemon);
+            Debug.Log(pokemons.Count);
+            OnUpdated();
+        }
         else
         {
             //TODO: Transfer to PC
