@@ -20,10 +20,11 @@ public class PokemonParty : MonoBehaviour
         set
         {
             pokemons = value;
+            OnUpdated?.Invoke();
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         foreach (var pokemon in pokemons)
         {

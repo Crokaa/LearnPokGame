@@ -30,7 +30,6 @@ public class PartyScreen : MonoBehaviour
     {
         int prevSelected = selected;
 
-        Debug.Log(memberSlots.Length);
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             if (selected < pokemons.Count - 1 && selected != 1 && selected != 3)
@@ -56,8 +55,11 @@ public class PartyScreen : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            selected = 0;
-            goBack?.Invoke();
+            if (goBack != null)
+            {
+                selected = 0;
+                goBack?.Invoke();
+            }
         }
         else if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -80,7 +82,7 @@ public class PartyScreen : MonoBehaviour
             if (i < pokemons.Count)
             {
                 memberSlots[i].gameObject.SetActive(true);
-                memberSlots[i].SetData(pokemons[i]);
+                memberSlots[i].Init(pokemons[i]);
             }
             else
             {

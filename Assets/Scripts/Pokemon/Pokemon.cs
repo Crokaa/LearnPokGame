@@ -53,6 +53,7 @@ public class Pokemon
     public Condition VolatileStatus { get; set; }
     public int VolatileStatusTime { get; set; }
     public event Action OnStatusChanged;
+    public event Action OnHpChanged;
 
     public void Init()
     {
@@ -141,11 +142,11 @@ public class Pokemon
 
             if (prevBoost == StatBoosts[stat])
             {
-                if(boost < 0)
+                if (boost < 0)
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any lower!");
                 else
                     StatusChanges.Enqueue($"{Base.Name}'s {stat} won't go any higher!");
-                
+
                 return;
             }
 
@@ -295,7 +296,7 @@ public class Pokemon
         int damage = Mathf.FloorToInt(d * modifiers) == 0 ? 1 : Mathf.FloorToInt(d * modifiers);
 
         var damageDetails = new DamageDetails()
-        {   
+        {
             Damage = damage,
             Effectiveness = weatherEffect == null ? effectiveness : effectiveness * weatherMod,
             WeatherEffectMessage = weatherEffect,
@@ -323,14 +324,20 @@ public class Pokemon
     {
         HP = HP - damage < 0 ? 0 : HP - damage;
         if (damage > 0)
+        {
             HpChanged = true;
+            OnHpChanged?.Invoke();
+        }
     }
 
     public void HealHP(int heal)
     {
         if (HP != MaxHp)
+        {
+            HP = HP + heal <= MaxHp ? HP + heal : MaxHp;
             HpChanged = true;
-        HP = HP + heal <= MaxHp ? HP + heal : MaxHp;
+            OnHpChanged?.Invoke();
+        }
     }
 
     // For now only works if enemy has moves with PP, will be fixed later when introducing Struggle
@@ -342,13 +349,14 @@ public class Pokemon
         return movesWithPP[r];
     }
 
-    public void ReceiveHP(Move move, int damage)
+    public void HealHPFromMove(Move move, int damage)
     {
         var heal = damage == 1 ? 1 : Mathf.FloorToInt(damage * (move.Base.HealPercentage / 100f));
         HealHP(heal);
     }
 
-    public Pokemon (PokemonSaveData saveData) {
+    public Pokemon(PokemonSaveData saveData)
+    {
 
         _base = PokemonDB.GetPokemonByName(saveData.name);
         level = saveData.level;
@@ -374,9 +382,11 @@ public class Pokemon
         VolatileStatus = null;
     }
 
-    public PokemonSaveData GetPokemonSaveData() {
+    public PokemonSaveData GetPokemonSaveData()
+    {
 
-        var saveData = new PokemonSaveData {
+        var saveData = new PokemonSaveData
+        {
             name = Base.Name,
             level = Level,
             hp = HP,

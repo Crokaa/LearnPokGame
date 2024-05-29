@@ -28,6 +28,8 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        partyScreen.Init();
+
         battleSystem.OnBattleOver += EndBattle;
 
         DialogManager.Instance.OnShowDialog += () =>
@@ -69,8 +71,6 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
-        partyScreen.Init();
 
         menuController = GetComponent<MenuController>();
 

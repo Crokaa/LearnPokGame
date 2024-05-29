@@ -380,7 +380,7 @@ public class BattleSystem : MonoBehaviour
 
                 if (move.Base.HealPercentage > 0)
                 {
-                    sourceUnit.Pokemon.ReceiveHP(move, damage);
+                    sourceUnit.Pokemon.HealHPFromMove(move, damage);
                     yield return sourceUnit.Hud.UpdateHP();
                     yield return dialogBox.TypeDialog($"The {targetUnit.Pokemon.Base.Name} had its energy drained!");
                 }

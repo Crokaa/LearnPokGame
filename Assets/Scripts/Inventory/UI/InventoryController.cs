@@ -34,6 +34,7 @@ public class InventoryController : MonoBehaviour
     private void Start()
     {
         UpdateItemList();
+        inventory.OnUpdated += UpdateItemList;
     }
 
     void UpdateItemList()
@@ -85,8 +86,9 @@ public class InventoryController : MonoBehaviour
         {
             Action onSelected = () =>
                 {
-
                     // Use item
+                    StartCoroutine(UseItem());
+                    
                 };
 
             Action goBackPartyScreen = () =>
@@ -96,6 +98,21 @@ public class InventoryController : MonoBehaviour
 
             partyScreen.HandleUpdate(onSelected, goBackPartyScreen);
         }
+    }
+
+    private IEnumerator UseItem()
+    {
+        currentState = InventoryUIState.Busy;
+
+        var item = inventory.UseItem(currentSelected, partyScreen.SelectedPokemon);
+        if(item != null){
+            yield return DialogManager.Instance.ShowDialogText($"{item.OnUseMessage}");
+        }
+        else {
+            yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
+        }
+
+        ClosePartySelection();
     }
 
     private void OpenPartySelection()

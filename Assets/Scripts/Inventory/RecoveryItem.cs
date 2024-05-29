@@ -20,4 +20,23 @@ public class RecoveryItem : ItemBase
     [Header("Revive")]
     [SerializeField] bool revive;
     [SerializeField] bool maxRevive;
+
+    public override bool Use(Pokemon target)
+    {
+
+        if (hpAmount > 0)
+        {
+            if (target.HP == target.MaxHp)
+                return false;
+
+            int beforeHeal = target.HP;
+            target.HealHP(hpAmount);
+            int afterHeal = target.HP;
+            // This changes the message for the Item class but it's not really important as it will always change based on who and how much I heal
+            OnUseMessage = $"{target.Base.Name}'s HP was restored by {afterHeal - beforeHeal} point(s).";
+            return true;
+        }
+
+        return false;
+    }
 }
