@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Linq;
 
-public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse, MoveToForget, ShowDialog }
+public enum BattleState { Start, ActionSelection, MoveSelection, RunningTurn, Busy, PartyScreen, BattleOver, AboutToUse, MoveToForget, ShowDialog, Bag }
 public enum BattleAction { Move, SwitchPokemon, Items, Run }
 
 public class BattleSystem : MonoBehaviour
@@ -22,6 +22,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] Image trainerImage;
     [SerializeField] GameObject pokeballSprite;
     [SerializeField] MoveSelectionUI moveSelectionUI;
+    [SerializeField] InventoryController inventoryUI;
     public event Action<bool> OnBattleOver;
 
     BattleState state;
@@ -156,6 +157,12 @@ public class BattleSystem : MonoBehaviour
         partyScreen.gameObject.SetActive(true);
     }
 
+    void OpenInventorySelection()
+    {
+        state = BattleState.Bag;
+        inventoryUI.gameObject.SetActive(true);
+    }
+
     void MoveSelection()
     {
         state = BattleState.MoveSelection;
@@ -231,22 +238,24 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            // Every action here required state to be busy because it's doing something
-            state = BattleState.Busy;
+            // Every action here required state to be busy because it's doing something (maybe not)
+            //state = BattleState.Busy;
 
             if (battleAction == BattleAction.SwitchPokemon)
             {
-
+                dialogBox.EnableActionSelector(false);
                 var selectedPokemon = partyScreen.SelectedPokemon;
                 yield return SwitchPokemon(selectedPokemon);
 
             }
             else if (battleAction == BattleAction.Run)
+            {
+                dialogBox.EnableActionSelector(false);
                 yield return TryToEscape();
+            }
             else if (battleAction == BattleAction.Items)
             {
                 dialogBox.EnableActionSelector(false);
-                yield return ThrowPokeball();
             }
 
             if (state == BattleState.BattleOver)
@@ -309,10 +318,10 @@ public class BattleSystem : MonoBehaviour
 
         yield return ShowWeatherChanges(sourceUnit.Pokemon);
 
-        if (sourceUnit.Pokemon.HpChanged)
-            sourceUnit.PlayHitAnimation();
+        // if (sourceUnit.Pokemon.HpChanged)
+        sourceUnit.PlayHitAnimation();
 
-        yield return sourceUnit.Hud.UpdateHP();
+        yield return sourceUnit.Hud.WaitHPBarUpdate();
 
         if (sourceUnit.Pokemon.HP <= 0)
         {
@@ -325,7 +334,6 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator RunMove(BattleUnit sourceUnit, BattleUnit targetUnit, Move move)
     {
-
         // Case where Pokemon dies due to VolatileStatus (Confusion) and we need to wait until the player switches
         yield return new WaitUntil(() => state == BattleState.RunningTurn);
 
@@ -334,7 +342,7 @@ public class BattleSystem : MonoBehaviour
         if (!canAttack)
         {
             yield return ShowStatusChanges(sourceUnit.Pokemon);
-            yield return sourceUnit.Hud.UpdateHP();
+            yield return sourceUnit.Hud.WaitHPBarUpdate();
             yield return CheckIfDead(sourceUnit);
             yield break;
         }
@@ -362,18 +370,20 @@ public class BattleSystem : MonoBehaviour
                 }
                 else
                 {
+
+                    sourceUnit.PlayAttackAnimation();
+                    yield return new WaitForSeconds(1f);
+                    targetUnit.PlayHitAnimation();
+
                     var damageDetails = targetUnit.Pokemon.TakeDamage(move, sourceUnit.Pokemon, field.Weather);
                     weatherEffectMessage = damageDetails.WeatherEffectMessage;
                     effectiveness = damageDetails.Effectiveness;
                     damage = damageDetails.Damage;
+
                     if (effectiveness == 0f)
                         break;
 
-                    sourceUnit.PlayAttackAnimation();
-                    yield return new WaitForSeconds(1f);
-
-                    targetUnit.PlayHitAnimation();
-                    yield return targetUnit.Hud.UpdateHP();
+                    yield return targetUnit.Hud.WaitHPBarUpdate();
                     yield return ShowCrit(damageDetails, targetUnit.Pokemon);
 
                 }
@@ -381,7 +391,7 @@ public class BattleSystem : MonoBehaviour
                 if (move.Base.HealPercentage > 0)
                 {
                     sourceUnit.Pokemon.HealHPFromMove(move, damage);
-                    yield return sourceUnit.Hud.UpdateHP();
+                    yield return sourceUnit.Hud.WaitHPBarUpdate();
                     yield return dialogBox.TypeDialog($"The {targetUnit.Pokemon.Base.Name} had its energy drained!");
                 }
 
@@ -511,7 +521,7 @@ public class BattleSystem : MonoBehaviour
 
         sourceUnit.Pokemon.OnAfterTurn();
         yield return ShowStatusChanges(sourceUnit.Pokemon);
-        yield return sourceUnit.Hud.UpdateHP();
+        yield return sourceUnit.Hud.WaitHPBarUpdate();
 
         if (sourceUnit.Pokemon.HP <= 0)
         {
@@ -691,6 +701,23 @@ public class BattleSystem : MonoBehaviour
         {
             HandlePartyScreenSelection();
         }
+        else if (state == BattleState.Bag)
+        {
+            Action goBack = () =>
+            {
+                state = BattleState.ActionSelection;
+                inventoryUI.gameObject.SetActive(false);
+            };
+
+            Action onItemUsed = () =>
+            {
+                state = BattleState.Busy;
+                inventoryUI.gameObject.SetActive(false);
+                StartCoroutine(RunTurns(BattleAction.Items));
+            };
+
+            inventoryUI.HandleUpdate(goBack, onItemUsed);
+        }
         else if (state == BattleState.AboutToUse)
         {
             HandleAboutToUse();
@@ -772,7 +799,7 @@ public class BattleSystem : MonoBehaviour
             {
 
                 //Bag
-                StartCoroutine(RunTurns(BattleAction.Items));
+                OpenInventorySelection();
             }
             else if (currentAction == 2)
             {
@@ -838,7 +865,7 @@ public class BattleSystem : MonoBehaviour
 
         Action onSelected = () =>
         {
-            var selectedMember =  partyScreen.SelectedPokemon;
+            var selectedMember = partyScreen.SelectedPokemon;
             if (selectedMember.HP <= 0)
             {
                 partyScreen.SetMessageText("You can't send out a fainted Pokemon.");

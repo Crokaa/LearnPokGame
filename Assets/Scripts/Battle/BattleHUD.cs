@@ -26,6 +26,13 @@ public class BattleHUD : MonoBehaviour
 
     public void SetData(Pokemon pokemon)
     {
+
+        if (this.pokemon != null)
+        {
+            this.pokemon.OnStatusChanged -= SetStatusText;
+            this.pokemon.OnHpChanged -= UpdateHP;
+        }
+
         this.pokemon = pokemon;
 
         nameText.text = pokemon.Base.Name;
@@ -44,6 +51,7 @@ public class BattleHUD : MonoBehaviour
 
         SetStatusText();
         this.pokemon.OnStatusChanged += SetStatusText;
+        this.pokemon.OnHpChanged += UpdateHP;
     }
 
     public void SetStatusText()
@@ -58,18 +66,25 @@ public class BattleHUD : MonoBehaviour
         }
     }
 
-    public void SetLevel() {
+    public void SetLevel()
+    {
 
         levelText.text = "Lvl " + pokemon.Level;
     }
 
-    public IEnumerator UpdateHP()
+    public IEnumerator WaitHPBarUpdate()
     {
-        if (pokemon.HpChanged)
-        {
-            yield return hpBar.SetHPSmooth((float)pokemon.HP / pokemon.MaxHp);
-            pokemon.HpChanged = false;
-        }
+        yield return new WaitUntil(() => !hpBar.IsUpdating);
+    }
+
+    public void UpdateHP()
+    {
+        StartCoroutine(UpdateHPAsync());
+    }
+
+    public IEnumerator UpdateHPAsync()
+    {
+        yield return hpBar.SetHPSmooth((float)pokemon.HP / pokemon.MaxHp);
     }
 
     public void SetExp()
@@ -86,7 +101,7 @@ public class BattleHUD : MonoBehaviour
 
         if (expBar == null) yield break;
 
-        if(reset)
+        if (reset)
             expBar.transform.localScale = new Vector3(0, 1, 1);
 
         float normalizedExp = GetNormalizedExp();
@@ -99,6 +114,6 @@ public class BattleHUD : MonoBehaviour
         int currentLevelExp = pokemon.Base.GetExpForLevel(pokemon.Level);
         int nextLevelExp = pokemon.Base.GetExpForLevel(pokemon.Level + 1);
 
-        return Mathf.Clamp01((float) (pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp));
+        return Mathf.Clamp01((float)(pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp));
     }
 }

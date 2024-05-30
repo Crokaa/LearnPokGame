@@ -48,7 +48,6 @@ public class Pokemon
     public Queue<string> WeatherDamages { get; private set; }
     public Condition Status { get; set; }
     public Ability Ability { get; set; }
-    public bool HpChanged { get; set; }
     public int StatusStime { get; set; }
     public Condition VolatileStatus { get; set; }
     public int VolatileStatusTime { get; set; }
@@ -325,7 +324,6 @@ public class Pokemon
         HP = HP - damage < 0 ? 0 : HP - damage;
         if (damage > 0)
         {
-            HpChanged = true;
             OnHpChanged?.Invoke();
         }
     }
@@ -335,7 +333,6 @@ public class Pokemon
         if (HP != MaxHp)
         {
             HP = HP + heal <= MaxHp ? HP + heal : MaxHp;
-            HpChanged = true;
             OnHpChanged?.Invoke();
         }
     }

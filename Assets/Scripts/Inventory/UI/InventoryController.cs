@@ -24,6 +24,7 @@ public class InventoryController : MonoBehaviour
     RectTransform itemListRect;
     const int itemsInViewport = 8;
     InventoryUIState currentState;
+    Action onItemUsed;
 
     private void Awake()
     {
@@ -57,12 +58,13 @@ public class InventoryController : MonoBehaviour
         currentSelected = 0;
         UpdateInventorySelection();
     }
-    public void HandleUpdate(Action goBack)
+    public void HandleUpdate(Action goBack, Action onItemUsed=null)
     {
+
+        this.onItemUsed = onItemUsed;
 
         if (currentState == InventoryUIState.ItemSelection)
         {
-
             int prevSelected = currentSelected;
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -106,13 +108,18 @@ public class InventoryController : MonoBehaviour
 
         var item = inventory.UseItem(currentSelected, partyScreen.SelectedPokemon);
         if(item != null){
+
+            if (item)
+
             yield return DialogManager.Instance.ShowDialogText($"{item.OnUseMessage}");
+            onItemUsed?.Invoke();
         }
         else {
             yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
         }
 
         ClosePartySelection();
+        
     }
 
     private void OpenPartySelection()
