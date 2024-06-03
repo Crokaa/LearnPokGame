@@ -33,6 +33,8 @@ public class BattleHUD : MonoBehaviour
             this.pokemon.OnHpChanged -= UpdateHP;
         }
 
+        if (pokemon == null) return;
+
         this.pokemon = pokemon;
 
         nameText.text = pokemon.Base.Name;

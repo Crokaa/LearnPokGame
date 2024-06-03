@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,11 @@ public class Move
         };
 
         return saveData;
+    }
+
+    internal void RecoverPP(int ppAmount)
+    {
+        Pp = Mathf.Clamp(Pp + ppAmount, 0, Base.Pp);
     }
 }
 [System.Serializable]

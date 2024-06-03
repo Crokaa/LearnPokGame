@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "A spray-type medicine to wake the sleeping. It can be used to rouse
     a Pok\xE9mon from the clutches of sleep."
   icon: {fileID: 438534510, guid: e63bee360d7853942bdd2d715de1bd24, type: 3}
+  onUseMessage: woke up.
   hpAmount: 0
   restoreMaxHP: 0
   ppAmount: 0

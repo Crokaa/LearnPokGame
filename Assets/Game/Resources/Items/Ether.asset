@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "A medicine that can be used to restore 10 PP to a single move that
     a Pok\xE9mon knows."
   icon: {fileID: -885662728, guid: e63bee360d7853942bdd2d715de1bd24, type: 3}
+  onUseMessage: PP was restored.
   hpAmount: 0
   restoreMaxHP: 0
   ppAmount: 10

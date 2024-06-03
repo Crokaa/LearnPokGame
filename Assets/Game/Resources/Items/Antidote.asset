@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "A spray-type medicine for treating poisoning. It can be used to lift
     the effects of being poisoned from a Pok\xE9mon."
   icon: {fileID: -458818333, guid: e63bee360d7853942bdd2d715de1bd24, type: 3}
+  onUseMessage: was cured of its poisoning.
   hpAmount: 0
   restoreMaxHP: 0
   ppAmount: 0

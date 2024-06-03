@@ -140,6 +140,10 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.BattleOver;
         playerParty.Pokemons.ForEach(p => p.OnBattleOver());
+
+        enemyUnit.Hud.SetData(null);
+        playerUnit.Hud.SetData(null);
+        
         OnBattleOver(won);
     }
 
