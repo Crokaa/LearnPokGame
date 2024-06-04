@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 336877316}
   - component: {fileID: 336877315}
   m_Layer: 8
-  m_Name: SolidObject
+  m_Name: SolidObjects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -989,8 +989,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 902619769
-  m_SortingLayer: 3
+  m_SortingLayerID: 1259618491
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -12375,9 +12375,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 902619769
-  m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingLayerID: 1259618491
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1112532967, guid: 48797ef3d21468741995005aadc62009, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

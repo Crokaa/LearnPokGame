@@ -13,14 +13,14 @@ TagManager:
   - UI
   - 
   - 
-  - SolidObjects
+  - SolidObjectsF
   - Grass
   - Interactable
   - Player
   - FovLayer
   - Portal
   - Collision
-  - 
+  - SolidObjectsB
   - 
   - 
   - 
@@ -46,9 +46,6 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 1259618491
-    locked: 0
-  - name: NormalView
-    uniqueID: 902619769
     locked: 0
   - name: Battle
     uniqueID: 1044723703
