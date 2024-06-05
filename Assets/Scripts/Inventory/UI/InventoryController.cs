@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,10 +18,13 @@ public class InventoryController : MonoBehaviour
     [SerializeField] Image upArrow;
     [SerializeField] Image downArrow;
     [SerializeField] PartyScreen partyScreen;
+    [SerializeField] Text categoryText;
 
     List<ItemSlotUI> slotUIList;
     Inventory inventory;
-    int currentSelected;
+    int[] currSelectedonCategory;
+    //int currentSelected = 0;
+    int categorySelected = 0;
     RectTransform itemListRect;
     const int itemsInViewport = 8;
     InventoryUIState currentState;
@@ -30,10 +34,12 @@ public class InventoryController : MonoBehaviour
     {
         inventory = Inventory.GetInventory();
         itemListRect = itemList.GetComponent<RectTransform>();
+        currSelectedonCategory = new int[Inventory.ItemCategories.Count];
     }
 
     private void Start()
     {
+        categoryText.text = Inventory.ItemCategories[categorySelected];
         UpdateItemList();
         inventory.OnUpdated += UpdateItemList;
     }
@@ -47,7 +53,7 @@ public class InventoryController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (var itemSlot in inventory.Slots)
+        foreach (var itemSlot in inventory.GetSlotByCategory(categorySelected))
         {
             var slotUIObj = Instantiate(itemSlotUI, itemList.transform);
             slotUIObj.SetData(itemSlot);
@@ -55,26 +61,46 @@ public class InventoryController : MonoBehaviour
             slotUIList.Add(slotUIObj);
         }
 
-        currentSelected = 0;
         UpdateInventorySelection();
     }
-    public void HandleUpdate(Action goBack, Action onItemUsed=null)
+    public void HandleUpdate(Action goBack, Action onItemUsed = null)
     {
 
         this.onItemUsed = onItemUsed;
 
         if (currentState == InventoryUIState.ItemSelection)
         {
-            int prevSelected = currentSelected;
+            int prevSelected = currSelectedonCategory[categorySelected];
+            int prevCategory = categorySelected;
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
-                currentSelected++;
+                currSelectedonCategory[categorySelected]++;
             else if (Input.GetKeyDown(KeyCode.UpArrow))
-                currentSelected--;
+                currSelectedonCategory[categorySelected]--;
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                categorySelected--;
+                if (categorySelected < 0)
+                    categorySelected = Inventory.ItemCategories.Count - 1;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                categorySelected++;
+                if (categorySelected > Inventory.ItemCategories.Count - 1)
+                    categorySelected = 0;
+            }
 
-            currentSelected = Mathf.Clamp(currentSelected, 0, inventory.Slots.Count - 1);
+            currSelectedonCategory[categorySelected] = Mathf.Clamp(currSelectedonCategory[categorySelected], 0, inventory.GetSlotByCategory(categorySelected).Count
+                - 1 > 0 ? inventory.GetSlotByCategory(categorySelected).Count - 1 : 0);
 
-            if (prevSelected != currentSelected)
+
+            if (prevCategory != categorySelected)
+            {
+                ResetSelection();
+                categoryText.text = Inventory.ItemCategories[categorySelected];
+                UpdateItemList();
+            }
+            else if (prevSelected != currSelectedonCategory[categorySelected])
                 UpdateInventorySelection();
 
             if (Input.GetKeyDown(KeyCode.Z))
@@ -90,7 +116,7 @@ public class InventoryController : MonoBehaviour
                 {
                     // Use item
                     StartCoroutine(UseItem());
-                    
+
                 };
 
             Action goBackPartyScreen = () =>
@@ -102,24 +128,35 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+    private void ResetSelection()
+    {
+        upArrow.gameObject.SetActive(false);
+        downArrow.gameObject.SetActive(false);
+
+        itemDescription.text = "";
+        itemIcon.sprite = null;
+    }
+
     private IEnumerator UseItem()
     {
         currentState = InventoryUIState.Busy;
 
-        var item = inventory.UseItem(currentSelected, partyScreen.SelectedPokemon);
-        if(item != null){
+        var item = inventory.UseItem(currSelectedonCategory[categorySelected], partyScreen.SelectedPokemon);
+        if (item != null)
+        {
 
             if (item)
 
-            yield return DialogManager.Instance.ShowDialogText($"{item.OnUseMessage}");
+                yield return DialogManager.Instance.ShowDialogText($"{item.OnUseMessage}");
             onItemUsed?.Invoke();
         }
-        else {
+        else
+        {
             yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
         }
 
         ClosePartySelection();
-        
+
     }
 
     private void OpenPartySelection()
@@ -137,10 +174,12 @@ public class InventoryController : MonoBehaviour
     void UpdateInventorySelection()
     {
 
+        var slots = inventory.GetSlotByCategory(categorySelected);
+
         for (int i = 0; i < slotUIList.Count; i++)
         {
 
-            if (i == currentSelected)
+            if (i == currSelectedonCategory[categorySelected])
             {
                 slotUIList[i].NameText.color = GlobalSettings.Instance.HighlightedColor;
                 slotUIList[i].CountText.color = GlobalSettings.Instance.HighlightedColor;
@@ -152,25 +191,26 @@ public class InventoryController : MonoBehaviour
             }
         }
 
-        var item = inventory.Slots[currentSelected].Item;
-        itemIcon.sprite = item.Icon;
-        itemDescription.text = item.Description;
+        if (slots.Count > 0)
+        {
+            var item = slots[currSelectedonCategory[categorySelected]].Item;
+            itemIcon.sprite = item.Icon;
+            itemDescription.text = item.Description;
 
-        if (slotUIList.Count > itemsInViewport)
-            HandleScrolling();
-
+            if (slotUIList.Count > itemsInViewport)
+                HandleScrolling();
+        }
     }
 
     private void HandleScrolling()
     {
-        float scrollPos = Mathf.Clamp(currentSelected - itemsInViewport / 2, 0, currentSelected) * slotUIList[0].Height;
+        float scrollPos = Mathf.Clamp(currSelectedonCategory[categorySelected] - itemsInViewport / 2, 0, currSelectedonCategory[categorySelected]) * slotUIList[0].Height;
         itemListRect.localPosition = new Vector2(itemListRect.localPosition.x, scrollPos);
 
-
-        bool showUpArrow = currentSelected > itemsInViewport / 2;
+        bool showUpArrow = currSelectedonCategory[categorySelected] > itemsInViewport / 2;
         upArrow.gameObject.SetActive(showUpArrow);
 
-        bool showDownArrow = currentSelected + itemsInViewport / 2 < slotUIList.Count;
+        bool showDownArrow = currSelectedonCategory[categorySelected] + itemsInViewport / 2 < slotUIList.Count;
         downArrow.gameObject.SetActive(showDownArrow);
 
     }
