@@ -47,7 +47,6 @@ public class InventoryController : MonoBehaviour
 
     void UpdateItemList()
     {
-
         slotUIList = new List<ItemSlotUI>();
         foreach (Transform child in itemList.transform)
         {

@@ -1049,9 +1049,10 @@ public class BattleSystem : MonoBehaviour
 
         state = BattleState.Busy;
 
+        dialogBox.EnableActionSelector(false);
+
         if (isTrainerBattle)
         {
-            dialogBox.EnableActionSelector(false);
             yield return dialogBox.TypeDialog($"The TRAINER blocked the BALL!");
             yield return dialogBox.TypeDialog($"Don't be a thief!");
             state = BattleState.RunningTurn;

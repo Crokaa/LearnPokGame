@@ -45,7 +45,6 @@ public class PokemonParty : MonoBehaviour
         if (pokemons.Count < 6)
         {
             pokemons.Add(newPokemon);
-            Debug.Log(pokemons.Count);
             OnUpdated();
         }
         else

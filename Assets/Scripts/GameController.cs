@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
     public SceneDetails CurrentScene { get; private set; }
     public SceneDetails PrevScene { get; private set; }
     //this will be removed later, I'm just using it for testing
-    float time = 0;
+    //float time = 0;
     MenuController menuController;
 
     public static GameController Instance { get; private set; }
