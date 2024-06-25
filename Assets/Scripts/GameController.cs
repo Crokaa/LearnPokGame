@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour
     MenuController menuController;
 
     public static GameController Instance { get; private set; }
+    public GameState State { get { return state; } }
 
     private void Start()
     {
@@ -160,7 +161,6 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-
         if (state == GameState.FreeRoam)
         {
 
@@ -170,6 +170,7 @@ public class GameController : MonoBehaviour
                 menuController.OpenMenu();
             }
 
+            /* No weather for now 
             time += Time.deltaTime;
 
             if (time > 10)
@@ -177,7 +178,7 @@ public class GameController : MonoBehaviour
                 currWeatherOutside = WeatherDB.Weathers.ElementAt(UnityEngine.Random.Range(0, WeatherDB.Weathers.Count)).Value;
                 time = 0;
                 Debug.Log("Weather changed to " + currWeatherOutside.Id);
-            }
+            } */
 
             playerController.HandleUpdate();
         }
@@ -204,9 +205,11 @@ public class GameController : MonoBehaviour
 
             partyScreen.HandleUpdate(onSelected, goBack);
         }
-        else if (state == GameState.Bag) {
+        else if (state == GameState.Bag)
+        {
             inventory.gameObject.SetActive(true);
-            Action goBack = () => {
+            Action goBack = () =>
+            {
                 inventory.gameObject.SetActive(false);
                 state = GameState.Menu;
             };

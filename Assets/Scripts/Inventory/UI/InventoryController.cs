@@ -28,13 +28,14 @@ public class InventoryController : MonoBehaviour
     RectTransform itemListRect;
     const int itemsInViewport = 8;
     InventoryUIState currentState;
-    Action onItemUsed;
+    Action<ItemBase> onItemUsed;
 
     private void Awake()
     {
         inventory = Inventory.GetInventory();
         itemListRect = itemList.GetComponent<RectTransform>();
         currSelectedonCategory = new int[Inventory.ItemCategories.Count];
+
     }
 
     private void Start()
@@ -63,7 +64,7 @@ public class InventoryController : MonoBehaviour
 
         UpdateInventorySelection();
     }
-    public void HandleUpdate(Action goBack, Action onItemUsed = null)
+    public void HandleUpdate(Action goBack, Action<ItemBase> onItemUsed = null)
     {
 
         this.onItemUsed = onItemUsed;
@@ -100,15 +101,18 @@ public class InventoryController : MonoBehaviour
                 categoryText.text = Inventory.ItemCategories[categorySelected];
                 UpdateItemList();
             }
+
             else if (prevSelected != currSelectedonCategory[categorySelected])
                 UpdateInventorySelection();
 
             if (Input.GetKeyDown(KeyCode.Z))
-                OpenPartySelection();
+                ItemSelected();
 
             else if (Input.GetKeyDown(KeyCode.X))
+            {
+                inventory.OnUpdated -= UpdateItemList;
                 goBack?.Invoke();
-
+            }
         }
         else if (currentState == InventoryUIState.PartySelection)
         {
@@ -116,7 +120,6 @@ public class InventoryController : MonoBehaviour
                 {
                     // Use item
                     StartCoroutine(UseItem());
-
                 };
 
             Action goBackPartyScreen = () =>
@@ -141,14 +144,14 @@ public class InventoryController : MonoBehaviour
     {
         currentState = InventoryUIState.Busy;
 
-        var item = inventory.UseItem(currSelectedonCategory[categorySelected], partyScreen.SelectedPokemon);
+        var item = inventory.UseItem(currSelectedonCategory[categorySelected], partyScreen.SelectedPokemon, categorySelected);
         if (item != null)
         {
 
-            if (item)
+            if (item is not PokeballItem)
+                yield return DialogManager.Instance.ShowDialogText($"{item.OnShowMessage}");
 
-                yield return DialogManager.Instance.ShowDialogText($"{item.OnUseMessage}");
-            onItemUsed?.Invoke();
+            onItemUsed?.Invoke(item);
         }
         else
         {
@@ -157,6 +160,18 @@ public class InventoryController : MonoBehaviour
 
         ClosePartySelection();
 
+    }
+
+    private void ItemSelected()
+    {
+        if (categorySelected == (int)ItemCategory.Pokeballs)
+        {
+            StartCoroutine(UseItem());
+        }
+        else
+        {
+            OpenPartySelection();
+        }
     }
 
     private void OpenPartySelection()
@@ -175,6 +190,8 @@ public class InventoryController : MonoBehaviour
     {
 
         var slots = inventory.GetSlotByCategory(categorySelected);
+
+        currSelectedonCategory[categorySelected] = Mathf.Clamp(currSelectedonCategory[categorySelected], 0, slots.Count - 1);
 
         for (int i = 0; i < slotUIList.Count; i++)
         {

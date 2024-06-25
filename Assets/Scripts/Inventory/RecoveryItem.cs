@@ -41,7 +41,7 @@ public class RecoveryItem : ItemBase
             target.CureVolatileStatus();
 
             // This changes the message for the Item class but it's not really important as it will always change based on who and how much I heal
-            OnUseMessage = $"{target.Base.Name}'s HP was restored by {target.HP} point(s).";
+            OnShowMessage = $"{target.Base.Name}'s HP was restored by {target.HP} point(s).";
 
             return true;
         }
@@ -67,7 +67,7 @@ public class RecoveryItem : ItemBase
             int afterHeal = target.HP;
 
             // This changes the message for the Item class but it's not really important as it will always change based on who and how much I heal
-            OnUseMessage = $"{target.Base.Name}'s HP was restored by {afterHeal - beforeHeal} point(s).";
+            OnShowMessage = $"{target.Base.Name}'s HP was restored by {afterHeal - beforeHeal} point(s).";
         }
 
         // Restore PP
@@ -78,14 +78,16 @@ public class RecoveryItem : ItemBase
                 target.Moves.ForEach(m => m.RecoverPP(m.Base.Pp));
             else
                 target.Moves.ForEach(m => m.RecoverPP(ppAmount));
+
+            OnShowMessage = onUseMessage;
         }
 
 
         // Cure status
         if(recoverAllStatus || status != ConditionID.none) 
-        {
+        {            
 
-            if(target.Status == null || target.VolatileStatus == null)
+            if(target.Status == null && target.VolatileStatus == null)
                 return false;
 
             if(recoverAllStatus)
@@ -94,12 +96,15 @@ public class RecoveryItem : ItemBase
                 target.CureVolatileStatus();
             }
 
+
             if(target.Status.Id == status)
                 target.CureStatus();
             else if(target.VolatileStatus.Id == status)
                 target.CureVolatileStatus();
             else
                 return false;
+
+            OnShowMessage = $"{target.Base.Name} " + onUseMessage; 
 
         }
 

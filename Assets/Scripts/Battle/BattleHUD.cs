@@ -56,6 +56,15 @@ public class BattleHUD : MonoBehaviour
         this.pokemon.OnHpChanged += UpdateHP;
     }
 
+    public void ClearData()
+    {
+        if (pokemon != null)
+        {
+            pokemon.OnStatusChanged -= SetStatusText;
+            pokemon.OnHpChanged -= UpdateHP;
+        }
+    }
+
     public void SetStatusText()
     {
 
