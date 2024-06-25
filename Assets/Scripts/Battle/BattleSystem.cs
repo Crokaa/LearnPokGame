@@ -1051,8 +1051,11 @@ public class BattleSystem : MonoBehaviour
 
         if (isTrainerBattle)
         {
-            yield return dialogBox.TypeDialog($"{player.Name} You can't catch trainers' pokemon!");
+            dialogBox.EnableActionSelector(false);
+            yield return dialogBox.TypeDialog($"The TRAINER blocked the BALL!");
+            yield return dialogBox.TypeDialog($"Don't be a thief!");
             state = BattleState.RunningTurn;
+            yield return RunTurns(BattleAction.Items);
             yield break;
         }
 
