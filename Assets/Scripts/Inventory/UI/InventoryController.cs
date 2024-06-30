@@ -109,7 +109,6 @@ public class InventoryController : MonoBehaviour
 
             else if (Input.GetKeyDown(KeyCode.X))
             {
-                inventory.OnUpdated -= UpdateItemList;
                 goBack?.Invoke();
             }
         }

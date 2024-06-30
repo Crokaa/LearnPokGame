@@ -938,6 +938,10 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[0].item
       value: 
       objectReference: {fileID: 11400000, guid: 63c014f2bfe9e594f9d7809d983dd7a1, type: 2}
@@ -954,6 +958,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: f3e2ca43ea3a09b4dbec6367185cb5f0, type: 2}
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[4].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 0d83a7449a405234b8881bdf951576a7, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[5].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 6d527e642b7692d4d8963b24fb28c0d9, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[6].item
       value: 
       objectReference: {fileID: 11400000, guid: 55cb69d3e4fcc9a48866fae87171db5f, type: 2}
@@ -966,9 +978,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: f3cf522306a0bad49b88e42c8d87b7ab, type: 2}
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[9].item
+      value: 
+      objectReference: {fileID: 11400000, guid: f3cf522306a0bad49b88e42c8d87b7ab, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[0].count
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[10].item
+      value: 
+      objectReference: {fileID: 11400000, guid: f3cf522306a0bad49b88e42c8d87b7ab, type: 2}
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[1].count
       value: 2
@@ -982,6 +1002,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[4].count
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[6].count
       value: 3
       objectReference: {fileID: 0}
@@ -992,6 +1016,70 @@ PrefabInstance:
     - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: slots.Array.data[8].count
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[9].count
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: slots.Array.data[10].count
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[2].item
+      value: 
+      objectReference: {fileID: 11400000, guid: b92a9f6c49cdb104aa061c83ac70e479, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[3].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 2a015b238a1cd6945ac8cfdb0eed52c4, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[4].item
+      value: 
+      objectReference: {fileID: 11400000, guid: d0e2fc07194127f4aac27c727bfcef58, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[5].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 797099c22631a98418ca1be828724ecf, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[6].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 61c7ea77f3bc3194eb42b5cafe66ed70, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[7].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 181aec0d762b57e46a9d9a9321d9ff2f, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[8].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 4f59239d8b6993a47aeb39ad3e7bf026, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[9].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 13287ec8a15afc54b8d6e08e46ff2ead, type: 2}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[2].count
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[3].count
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[4].count
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[5].count
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[6].count
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2208394360602387996, guid: 38472e70866a9f6419845f94029c0556, type: 3}
+      propertyPath: pokeballs.Array.data[9].count
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2277580073270754758, guid: 38472e70866a9f6419845f94029c0556, type: 3}
       propertyPath: partyScreen

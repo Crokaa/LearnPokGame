@@ -11,7 +11,10 @@ public class ItemSlotUI : MonoBehaviour
     RectTransform rectTransform;
     public Text NameText { get { return nameText; } }
     public Text CountText { get { return countText; } }
-    public float Height { get { return rectTransform.rect.height; } }
+    public float Height { get { 
+        if (rectTransform == null)
+            return 0;
+        return rectTransform.rect.height; } }
 
     private void Awake()
     {

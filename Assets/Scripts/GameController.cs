@@ -83,6 +83,7 @@ public class GameController : MonoBehaviour
         ConditionsDB.Init();
         WeatherDB.Init();
         AbilitiesDB.Init();
+        ItemDB.Init();
     }
 
     public void StartBattle()
