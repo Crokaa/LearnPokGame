@@ -11,7 +11,7 @@ public class ItemBase : ScriptableObject
     string onShowMessage;
 
     public string Name { get { return name; } }
-    public string Description { get { return description; } }
+    public virtual string Description { get { return description; } }
     public Sprite Icon { get { return icon; } }
     public string OnShowMessage { get { return onShowMessage; } protected set { onShowMessage = value; } }
 

@@ -38,12 +38,20 @@ public class Inventory : MonoBehaviour, ISavable
         return FindObjectOfType<PlayerController>().GetComponent<Inventory>();
     }
 
+    public ItemBase GetItem(int itemIndex, int categoryIndex)
+    {
+        var currentSlots = GetSlotByCategory(categoryIndex);
+
+        if (currentSlots.Count == 0)
+            return null;
+
+        return currentSlots[itemIndex].Item;
+    }   
+
     public ItemBase UseItem(int itemIndex, Pokemon pokemon, int currentCategory)
     {
 
-        var currentSlots = GetSlotByCategory(currentCategory);
-
-        var item = currentSlots[itemIndex].Item;
+        var item = GetItem(itemIndex, currentCategory);
         bool used = item.Use(pokemon);
         if (used)
         {

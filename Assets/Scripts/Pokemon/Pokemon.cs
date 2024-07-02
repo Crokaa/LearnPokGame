@@ -314,9 +314,14 @@ public class Pokemon
 
     }
 
-    public void LearnMove(LearnableMove newMove)
+    public void LearnMove(MoveBase newMove)
     {
-        Moves.Add(new Move(newMove.MoveBase));
+        Moves.Add(new Move(newMove));
+    }
+
+    public bool HasMove(MoveBase move)
+    {
+        return Moves.Count(m => m.Base == move) > 0;
     }
 
     public void UpdateHP(int damage)
