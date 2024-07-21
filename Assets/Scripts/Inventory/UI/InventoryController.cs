@@ -109,7 +109,7 @@ public class InventoryController : MonoBehaviour
                 UpdateInventorySelection();
 
             if (Input.GetKeyDown(KeyCode.Z))
-                ItemSelected();
+                StartCoroutine(ItemSelected());
 
             else if (Input.GetKeyDown(KeyCode.X))
             {
@@ -121,6 +121,7 @@ public class InventoryController : MonoBehaviour
             Action onSelected = () =>
                 {
                     // Use item
+                    currentState = InventoryUIState.Busy;
                     StartCoroutine(UseItem());
                 };
 
@@ -182,44 +183,52 @@ public class InventoryController : MonoBehaviour
 
     IEnumerator UseItem()
     {
-        currentState = InventoryUIState.Busy;
+        //currentState = InventoryUIState.Busy;
 
         yield return HandleTmItems();
 
         var item = inventory.UseItem(currSelectedonCategory[categorySelected], partyScreen.SelectedPokemon, categorySelected);
         if (item != null)
         {
-
             if (item is RecoveryItem)
-                yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
-
+                yield return DialogManager.Instance.ShowDialogText($"{item.OnShowMessage}");
+                
             onItemUsed?.Invoke(item);
         }
-        else if(Inventory.ItemCategories[categorySelected] != "TMs & HMs")
+        else if (Inventory.ItemCategories[categorySelected] != "TMs & HMs")
         {
             yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
         }
-
-        var fader = FindObjectOfType<Fader>();
-        GameController.Instance.PauseGame(true);
-        yield return fader.FadeIn(0.5f);
+        else
+            yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
 
         ClosePartySelection();
-        
-        yield return fader.FadeOut(0.5f);
-        GameController.Instance.PauseGame(false);
 
     }
 
     IEnumerator HandleTmItems()
     {
 
-        var item = inventory.GetItem(currSelectedonCategory[categorySelected], categorySelected) as TmItem;
+        var item = inventory.GetItem(currSelectedonCategory[categorySelected], categorySelected) as TmHmItem;
 
         if (item == null)
             yield break;
 
         var pokemon = partyScreen.SelectedPokemon;
+
+        if (pokemon.HasMove(item.Move))
+        {
+            yield return DialogManager.Instance.ShowDialogText($"{pokemon.Base.Name} already knows {item.Move.Name}.");
+            yield break;
+        }
+
+        if (!item.CanBeTaught(pokemon))
+        {
+            yield return DialogManager.Instance.ShowDialogText($"{pokemon.Base.Name} and {item.Move.Name} are not compatible.");
+            yield return DialogManager.Instance.ShowDialogText($"{item.Move.Name} can't be learned.");
+            yield break;
+        }
+
         if (pokemon.Moves.Count < PokemonBase.MaxNumMoves)
         {
             pokemon.LearnMove(item.Move);
@@ -247,12 +256,38 @@ public class InventoryController : MonoBehaviour
         currentState = InventoryUIState.MoveToForget;
     }
 
-    void ItemSelected()
+    IEnumerator ItemSelected()
     {
+        currentState = InventoryUIState.Busy;
+
         var item = inventory.GetItem(currSelectedonCategory[categorySelected], categorySelected);
 
         if (item == null)
-            return;
+        {
+            currentState = InventoryUIState.ItemSelection;
+            yield break;
+        }
+
+        if (GameController.Instance.State == GameState.Battle)
+        {
+            if (!item.CanUseInBattle)
+            {
+                yield return DialogManager.Instance.ShowDialogText("This item can't be used in battle.");
+                currentState = InventoryUIState.ItemSelection;
+                yield break;
+            }
+        }
+        else
+        {
+
+            if (!item.CanUseOutsideBattle)
+            {
+                yield return DialogManager.Instance.ShowDialogText("This item can't be used outside battle.");
+                currentState = InventoryUIState.ItemSelection;
+                yield break;
+            }
+
+        }
 
         if (categorySelected == (int)ItemCategory.Pokeballs)
         {
@@ -261,19 +296,45 @@ public class InventoryController : MonoBehaviour
         else
         {
             OpenPartySelection();
+
+            if (item is TmHmItem tmHmItem)
+                partyScreen.ShowIfTmUsable(tmHmItem);
         }
     }
 
+    IEnumerator FadeInInventory(Fader fader)
+    {
+
+        GameController.Instance.PauseGame(true);
+        yield return fader.FadeIn(0.5f);
+    }
+
+    IEnumerator FadeOutInventory(Fader fader)
+    {
+        yield return fader.FadeOut(0.5f);
+        GameController.Instance.PauseGame(false);
+    }
+
+
     void OpenPartySelection()
     {
-        currentState = InventoryUIState.PartySelection;
+        partyScreen.ResetPartySelected();
+        //var fader = FindObjectOfType<Fader>();
+        //yield return FadeInInventory(fader);
         partyScreen.gameObject.SetActive(true);
+        //yield return FadeOutInventory(fader);
+        currentState = InventoryUIState.PartySelection;
     }
 
     void ClosePartySelection()
     {
-        currentState = InventoryUIState.ItemSelection;
+        //var fader = FindObjectOfType<Fader>();
+        //yield return FadeInInventory(fader);
         partyScreen.gameObject.SetActive(false);
+        //yield return FadeOutInventory(fader);
+        partyScreen.ResetPartySelected();
+        partyScreen.ClearMemberSlotMessages();
+        currentState = InventoryUIState.ItemSelection;
     }
 
     void UpdateInventorySelection()

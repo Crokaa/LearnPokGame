@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 143185d4ba3817a4582d38fa1d76b5e4, type: 3}
-  m_Name: TM01
+  m_Name: HM01
   m_EditorClassIdentifier: 
-  name: TM01 - Double Kick
+  name: HM01
   description: 
   icon: {fileID: -343911549, guid: 3ae12697ae504414bbf0797ea36dfddd, type: 3}
   onUseMessage: 
-  move: {fileID: 11400000, guid: 30cad83fe3f20394fab842160c61d936, type: 2}
+  move: {fileID: 11400000, guid: 437acb50746bc8142b2dffadfe501db8, type: 2}
+  isHM: 1

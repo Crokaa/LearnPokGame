@@ -30,6 +30,7 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int catchRate;
 
     [SerializeField] List<LearnableMove> learnableMoves;
+    [SerializeField] List<MoveBase> learnByTm;
     [SerializeField] GrowthRate growthRate;
     [SerializeField] bool abilityOncePerBattleUsed;
 
@@ -142,6 +143,11 @@ public class PokemonBase : ScriptableObject
     public List<LearnableMove> LearnableMoves
     {
         get { return learnableMoves; }
+    }
+
+    public List<MoveBase> LearnByTm
+    {
+        get { return learnByTm; }
     }
 
     public GrowthRate GrowthRate

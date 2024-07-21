@@ -36,5 +36,9 @@ MonoBehaviour:
     level: 1
   - moveBase: {fileID: 11400000, guid: 4a68ba4e3ca346f49b933f4e85632a0a, type: 2}
     level: 1
+  learnByTm:
+  - {fileID: 11400000, guid: 4a68ba4e3ca346f49b933f4e85632a0a, type: 2}
+  - {fileID: 11400000, guid: 30cad83fe3f20394fab842160c61d936, type: 2}
+  - {fileID: 11400000, guid: b6bc7378488deba4b8c61473e16fa7df, type: 2}
   growthRate: 3
   abilityOncePerBattleUsed: 0

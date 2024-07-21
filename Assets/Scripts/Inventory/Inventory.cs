@@ -46,7 +46,7 @@ public class Inventory : MonoBehaviour, ISavable
             return null;
 
         return currentSlots[itemIndex].Item;
-    }   
+    }
 
     public ItemBase UseItem(int itemIndex, Pokemon pokemon, int currentCategory)
     {
@@ -55,7 +55,8 @@ public class Inventory : MonoBehaviour, ISavable
         bool used = item.Use(pokemon);
         if (used)
         {
-            RemoveItem(item, currentCategory);
+            if (!item.IsReusable)
+                RemoveItem(item, currentCategory);
             return item;
         }
 
@@ -92,7 +93,7 @@ public class Inventory : MonoBehaviour, ISavable
 
     public void RestoreState(object state)
     {
-        var saveData = (InventorySaveData) state;
+        var saveData = (InventorySaveData)state;
 
         this.slots = saveData.slots.Select(i => new ItemSlot(i)).ToList();
         this.pokeballs = saveData.pokeballs.Select(i => new ItemSlot(i)).ToList();
@@ -142,7 +143,7 @@ public class SaveItemSlot
 }
 
 [Serializable]
-public class InventorySaveData 
+public class InventorySaveData
 {
     public List<SaveItemSlot> slots;
     public List<SaveItemSlot> pokeballs;

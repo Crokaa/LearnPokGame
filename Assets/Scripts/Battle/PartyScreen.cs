@@ -51,13 +51,14 @@ public class PartyScreen : MonoBehaviour
                 selected -= 2;
         }
 
-        UpdateMemberSelection(selected);
+
+        if (prevSelected != selected)
+            UpdateMemberSelection(selected);
 
         if (Input.GetKeyDown(KeyCode.X))
         {
             if (goBack != null)
             {
-                selected = 0;
                 goBack?.Invoke();
             }
         }
@@ -95,6 +96,12 @@ public class PartyScreen : MonoBehaviour
         UpdateMemberSelection(selected);
     }
 
+    public void ResetPartySelected()
+    {
+        selected = 0;
+        UpdateMemberSelection(selected);
+    }
+
     private void UpdateMemberSelection(int selectedMember)
     {
         for (int i = 0; i < pokemons.Count; i++)
@@ -104,6 +111,31 @@ public class PartyScreen : MonoBehaviour
             else
                 memberSlots[i].SetSelected(false);
         }
+    }
+
+    public void ShowIfTmUsable(TmHmItem item)
+    {
+        for (int i = 0; i < pokemons.Count; i++)
+        {
+            if (item.CanBeTaught(pokemons[i]))
+            {
+                memberSlots[i].SetMessageText("ABLE!");
+
+                if (pokemons[i].HasMove(item.Move))
+                    memberSlots[i].SetMessageText("LEARNED");
+                
+            }
+
+            else
+                memberSlots[i].SetMessageText("NOT ABLE!");
+        }
+    }
+
+    public void ClearMemberSlotMessages()
+    {
+        for (int i = 0; i < pokemons.Count; i++)
+            memberSlots[i].SetMessageText("");
+
     }
 
     public void SetMessageText(string message)
