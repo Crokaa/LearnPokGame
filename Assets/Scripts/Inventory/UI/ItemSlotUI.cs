@@ -11,18 +11,11 @@ public class ItemSlotUI : MonoBehaviour
     RectTransform rectTransform;
     public Text NameText { get { return nameText; } }
     public Text CountText { get { return countText; } }
-    public float Height { get { 
-        if (rectTransform == null)
-            return 0;
-        return rectTransform.rect.height; } }
-
-    private void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
-    }
+    public float Height { get { return rectTransform.rect.height; } }
 
     public void SetData(ItemSlot itemSlot)
     {
+        rectTransform = GetComponent<RectTransform>();
         nameText.text = itemSlot.Item.Name;
         countText.text = $"{itemSlot.Count}";
     }

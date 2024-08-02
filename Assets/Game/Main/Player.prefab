@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e3913bbe082d74187daf55fc731aa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Brendan
+  name: Croka
   sprite: {fileID: 21300000, guid: a1aec4c462ecbfa4380ba0ca97277126, type: 3}
 --- !u!114 &7740353402807538425
 MonoBehaviour:
@@ -315,6 +315,8 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: b9bf15ed049675e46a9b25d3037a2b9e, type: 2}
     count: 2
   tmshms: []
+  berries: []
+  keyitems: []
 --- !u!1 &2407840983123580625
 GameObject:
   m_ObjectHideFlags: 0

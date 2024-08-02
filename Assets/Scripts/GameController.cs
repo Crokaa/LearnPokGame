@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     [SerializeField] InventoryController inventory;
 
     GameState state;
-    GameState stateBeforePause;
+    GameState prevState;
     TrainerController trainer;
     Weather currWeatherOutside;
     public SceneDetails CurrentScene { get; private set; }
@@ -35,15 +35,19 @@ public class GameController : MonoBehaviour
 
         DialogManager.Instance.OnShowDialog += () =>
         {
-
-            state = GameState.Dialog;
+            // This means it's the first time opening the dialog
+            if (state != GameState.Dialog)
+            {
+                prevState = state;
+                state = GameState.Dialog;
+            }
         };
 
         DialogManager.Instance.OnCloseDialog += () =>
         {
 
             if (state == GameState.Dialog)
-                state = GameState.FreeRoam;
+                state = prevState;
         };
 
         menuController.goBack += () =>
@@ -60,12 +64,12 @@ public class GameController : MonoBehaviour
 
         if (pause)
         {
-            stateBeforePause = state;
+            prevState = state;
             state = GameState.Paused;
         }
         else
         {
-            state = stateBeforePause;
+            state = prevState;
         }
     }
 
@@ -187,8 +191,8 @@ public class GameController : MonoBehaviour
         {
             battleSystem.HandleUpdate();
         }
-        else if (state == GameState.Dialog)
-            DialogManager.Instance.HandleUpdate();
+        //else if (state == GameState.Dialog)
+        //  DialogManager.Instance.HandleUpdate();
         else if (state == GameState.Menu)
             menuController.HandleUpdate();
         else if (state == GameState.PartyScreen)

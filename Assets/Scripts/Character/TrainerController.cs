@@ -41,17 +41,17 @@ public class TrainerController : MonoBehaviour, Interactable, ISavable
         character = GetComponent<Character>();
     }
 
-    public void Interact(Transform initiator)
+    public IEnumerator Interact(Transform initiator)
     {
         character.LookTowards(initiator.position);
 
-        if(!lostBattle)
-            StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () =>
-            {
-                GameController.Instance.StartTrainerBattle(this);
-            }));
-        else 
-            StartCoroutine(DialogManager.Instance.ShowDialog(dialogAfterBattle));
+        if (!lostBattle)
+        {
+            yield return DialogManager.Instance.ShowDialog(dialog);
+            GameController.Instance.StartTrainerBattle(this);
+        }
+        else
+            yield return DialogManager.Instance.ShowDialog(dialogAfterBattle);
     }
 
     public IEnumerator TriggerTrainerBattle(PlayerController player)
@@ -68,14 +68,14 @@ public class TrainerController : MonoBehaviour, Interactable, ISavable
         yield return character.Move(moveVec);
 
         player.LookTowards(transform.position);
-        
-        StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () =>
-        {
-            GameController.Instance.StartTrainerBattle(this);
-        }));
+
+        yield return DialogManager.Instance.ShowDialog(dialog);
+
+        GameController.Instance.StartTrainerBattle(this);
     }
 
-    public void BattleLost() {
+    public void BattleLost()
+    {
         lostBattle = true;
         fov.SetActive(false);
     }
@@ -103,8 +103,8 @@ public class TrainerController : MonoBehaviour, Interactable, ISavable
     public void RestoreState(object state)
     {
         lostBattle = (bool)state;
-        
-        if(lostBattle)
+
+        if (lostBattle)
             fov.SetActive(false);
     }
 }

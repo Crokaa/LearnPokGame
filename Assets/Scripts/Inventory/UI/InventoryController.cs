@@ -195,12 +195,11 @@ public class InventoryController : MonoBehaviour
                 
             onItemUsed?.Invoke(item);
         }
-        else if (Inventory.ItemCategories[categorySelected] != "TMs & HMs")
+        else 
         {
-            yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
+            if (categorySelected == (int) ItemCategory.Items)
+                yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
         }
-        else
-            yield return DialogManager.Instance.ShowDialogText("It won't have any effect.");
 
         ClosePartySelection();
 

@@ -63,6 +63,39 @@ public class Inventory : MonoBehaviour, ISavable
         return null;
     }
 
+    public void AddItem(ItemBase item, int count = 1)
+    {
+
+        var categoryIndex = (int)GetItemCategory(item);
+
+        var currSlots = GetSlotByCategory(categoryIndex);
+        var itemSlot = currSlots.FirstOrDefault(itemSlot => itemSlot.Item == item);
+
+        if (itemSlot != null)
+            itemSlot.Count += count;
+        
+        else
+            currSlots.Add(new ItemSlot(item, count));
+
+        OnUpdated?.Invoke();
+    }
+
+    public ItemCategory GetItemCategory(ItemBase item)
+    {
+        if (item is RecoveryItem)
+            return ItemCategory.Items;
+        else if (item is PokeballItem)
+            return ItemCategory.Pokeballs;
+        else if (item is TmHmItem)
+            return ItemCategory.TmHm;
+        //This will be BerryItem but for now I'll use null and then change it
+        else if (item is null)
+            return ItemCategory.Berries;
+        else
+            return ItemCategory.KeyItems;
+
+    }
+
     private void RemoveItem(ItemBase item, int currentCategory)
     {
 
@@ -113,7 +146,7 @@ public class ItemSlot
     [SerializeField] ItemBase item;
     [SerializeField] int count;
 
-    public ItemBase Item { get { return item; } }
+    public ItemBase Item { get { return item; } set { item = value; } }
     public int Count { get { return count; } set { count = value; } }
 
     public SaveItemSlot GetSaveItemSlot()
@@ -125,6 +158,12 @@ public class ItemSlot
         };
 
         return saveData;
+    }
+
+    public ItemSlot(ItemBase item, int count)
+    {
+        this.item = item;
+        this.count = count;
     }
 
     public ItemSlot(SaveItemSlot saveData)
