@@ -2762,6 +2762,7 @@ GameObject:
   - component: {fileID: 925695608}
   - component: {fileID: 925695610}
   - component: {fileID: 925695609}
+  - component: {fileID: 925695611}
   m_Layer: 10
   m_Name: NPC
   m_TagString: Untagged
@@ -2977,6 +2978,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   lookingAt: {x: 0, y: 0, z: 0}
+--- !u!114 &925695611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925695603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: babac3ca3cc98a9499109aadda95bb04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  item: {fileID: 11400000, guid: f0680d7499dbc84419517b281174b198, type: 2}
+  count: 2
+  dialog:
+    lines:
+    - I just grabbed a lot of pokeballs in Town 1.
+    - Let me give you some.
 --- !u!1 &987956119
 GameObject:
   m_ObjectHideFlags: 0

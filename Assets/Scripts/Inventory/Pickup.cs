@@ -25,7 +25,7 @@ public class Pickup : MonoBehaviour, Interactable
 
             yield return DialogManager.Instance.ShowDialogText($"{playerName} found one " + item.Name.ToUpper() + ".", false, false);
             yield return new WaitForSeconds(1f);
-            yield return DialogManager.Instance.ShowDialogText($"{playerName} put away the " + item.Name.ToUpper() + $" in the {inventory.GetItemCategory(item)} POCKET.");
+            yield return DialogManager.Instance.ShowDialogText($"{playerName} put away the " + item.Name.ToUpper() + $" in the {inventory.GetItemCategory(item).ToString().ToUpper()} POCKET.");
         }
     }
 }
