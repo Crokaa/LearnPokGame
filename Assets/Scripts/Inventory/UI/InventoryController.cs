@@ -69,7 +69,7 @@ public class InventoryController : MonoBehaviour
     }
     public void HandleUpdate(Action goBack, Action<ItemBase> onItemUsed = null)
     {
-
+        
         this.onItemUsed = onItemUsed;
 
         if (currentState == InventoryUIState.ItemSelection)

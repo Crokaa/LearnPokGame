@@ -34,6 +34,8 @@ public class Portal : MonoBehaviour, IPlayerTriggerable
         this.player = player;
     }
 
+    public bool KeepTriggering => false;
+
     IEnumerator SwitchScene()
     {
 

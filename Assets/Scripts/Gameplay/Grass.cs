@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grass : MonoBehaviour, IPlayerTriggerable
 {
+    
     public void OnPlayerTriggered(PlayerController player)
     {
             player.Character.Animator.IsMoving = true;
@@ -13,4 +14,6 @@ public class Grass : MonoBehaviour, IPlayerTriggerable
                 GameController.Instance.StartBattle();
             }
     }
+
+    public bool KeepTriggering => true;
 }

@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour, ISavable
     [SerializeField] string name;
     private Vector2 input;
     private Character character;
+    IPlayerTriggerable currentTrigger;
 
     [SerializeField] Sprite sprite;
 
@@ -74,17 +75,26 @@ public class PlayerController : MonoBehaviour, ISavable
     {
 
         var colliders = Physics2D.OverlapCircleAll(transform.position - new Vector3(0, character.OffsetY), 0.2f, GameLayers.Instance.TriggerableLayers);
+        IPlayerTriggerable triggerable = null;
 
         foreach (var collider in colliders)
         {
-            var triggerable = collider.GetComponent<IPlayerTriggerable>();
+            triggerable = collider.GetComponent<IPlayerTriggerable>();
             if (triggerable != null)
             {
+
+                if (currentTrigger == triggerable && !triggerable.KeepTriggering)
+                    break;
+
                 character.Animator.IsMoving = false;
                 triggerable.OnPlayerTriggered(this);
+                currentTrigger = triggerable;
                 break;
             }
         }
+
+        if (colliders.Count() == 0)
+            currentTrigger = null;
     }
 
     public void LookTowards(Vector3 position)
@@ -95,9 +105,10 @@ public class PlayerController : MonoBehaviour, ISavable
     public object CaptureState()
     {
 
-        var saveData = new PlayerSaveData {
-            position = new float [] {transform.position.x, transform.position.y},
-            lookingAt = new float [] {character.lookingAt.x, character.lookingAt.y},
+        var saveData = new PlayerSaveData
+        {
+            position = new float[] { transform.position.x, transform.position.y },
+            lookingAt = new float[] { character.lookingAt.x, character.lookingAt.y },
             pokParty = GetComponent<PokemonParty>().Pokemons.Select(p => p.GetPokemonSaveData()).ToList()
         };
 
@@ -106,7 +117,7 @@ public class PlayerController : MonoBehaviour, ISavable
 
     public void RestoreState(object state)
     {
-        var saveData = (PlayerSaveData) state;
+        var saveData = (PlayerSaveData)state;
 
         transform.position = new Vector3(saveData.position[0], saveData.position[1]);
         character.LookTowards(transform.position + new Vector3(saveData.lookingAt[0], saveData.lookingAt[1]));
@@ -116,10 +127,11 @@ public class PlayerController : MonoBehaviour, ISavable
 }
 
 [System.Serializable]
-public class PlayerSaveData {
+public class PlayerSaveData
+{
 
     public float[] position;
-    public  float[] lookingAt;
+    public float[] lookingAt;
     public List<PokemonSaveData> pokParty;
 }
 

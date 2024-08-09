@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrainerFov : MonoBehaviour, IPlayerTriggerable
+public class StoryItem : MonoBehaviour, IPlayerTriggerable
 {
+
+    [SerializeField] Dialog dialog;
 
     public void OnPlayerTriggered(PlayerController player)
     {
-            GameController.Instance.OnEnterTrainerView(GetComponentInParent<TrainerController>());
+        StartCoroutine(DialogManager.Instance.ShowDialog(dialog));
     }
 
     public bool KeepTriggering => false;

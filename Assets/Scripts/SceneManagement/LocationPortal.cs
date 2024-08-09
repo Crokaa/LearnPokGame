@@ -27,6 +27,8 @@ public class LocationPortal : MonoBehaviour, IPlayerTriggerable
         this.player = player;
     }
 
+    public bool KeepTriggering => false;
+
     IEnumerator Teleport()
     {
 
