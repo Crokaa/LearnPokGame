@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 114
+  controlID: 124
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 122
+  controlID: 20
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 90
+  controlID: 100
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -444,21 +444,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: bc7bffff5a7cffff8488ffff8c88ffff5c89ffff86a2ffff46a6fffff8a7ffff76b3ffffeab4ffff56b5ffffb4b5ffff0ab6ffffa2b6fffff8b6ffff3cc3ffffd0c3fffffeceffff5ccfffffb2cfffff1ed0ffffb6d0fffff8d0ffff88d1fffff4d1ffff54d2ffffe4d2ffff50d3ffffecd3ffff9adfffff44e2ffff1afbffff6c9c0000
+      m_ExpandedIDs: 005cfeff0c60feff5064feffde80feffee80feff8494feff2c71ffff72adffff3ae8ffff1afbfffff4ffffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Player (1)
+        m_OriginalName: Player (1)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -21430
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 4
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 7}
       m_SearchString: 
@@ -513,7 +513,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes
+    - Assets/Game/Main
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -521,15 +521,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scenes
+  - Assets/Game/Main
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Code\LearnPokGame
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 190}
-    m_SelectedIDs: 528d0000
-    m_LastClickedID: 36178
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 368d0000
+    m_LastClickedID: 36150
     m_ExpandedIDs: 000000008481000086810000888100008a8100008c8100008e8100009081000092810000948100009681000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1017,9 +1017,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0.4832288, y: 15.428125, z: 0.0867769}
+    m_Target: {x: -14.732676, y: 12.750703, z: 0.0760334}
     speed: 2
-    m_Value: {x: 0.4832288, y: 15.428125, z: 0.0867769}
+    m_Value: {x: -14.732676, y: 12.750703, z: 0.0760334}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1069,9 +1069,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 11.434514
+    m_Target: 2.396636
     speed: 2
-    m_Value: 11.434514
+    m_Value: 2.396636
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1278,7 +1278,7 @@ MonoBehaviour:
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 648
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:

@@ -88,8 +88,7 @@ public class Inventory : MonoBehaviour, ISavable
             return ItemCategory.Pokeballs;
         else if (item is TmHmItem)
             return ItemCategory.TmHm;
-        //This will be BerryItem but for now I'll use null and then change it
-        else if (item is null)
+        else if (item is BerryItem)
             return ItemCategory.Berries;
         else
             return ItemCategory.KeyItems;
