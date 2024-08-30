@@ -285,8 +285,6 @@ MonoBehaviour:
     count: 10
   - item: {fileID: 11400000, guid: 0d83a7449a405234b8881bdf951576a7, type: 2}
     count: 1
-  - item: {fileID: 11400000, guid: 6d527e642b7692d4d8963b24fb28c0d9, type: 2}
-    count: 1
   - item: {fileID: 11400000, guid: 63c014f2bfe9e594f9d7809d983dd7a1, type: 2}
     count: 2
   - item: {fileID: 11400000, guid: f3e2ca43ea3a09b4dbec6367185cb5f0, type: 2}

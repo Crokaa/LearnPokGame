@@ -56,7 +56,7 @@ public class Inventory : MonoBehaviour, ISavable
         if (used)
         {
             if (!item.IsReusable)
-                RemoveItem(item, currentCategory);
+                RemoveItem(item);
             return item;
         }
 
@@ -95,8 +95,9 @@ public class Inventory : MonoBehaviour, ISavable
 
     }
 
-    private void RemoveItem(ItemBase item, int currentCategory)
+    public void RemoveItem(ItemBase item)
     {
+        var currentCategory = (int)GetItemCategory(item);
 
         var currentSlots = GetSlotByCategory(currentCategory);
         var itemSlot = currentSlots.First(slot => slot.Item == item);
@@ -107,6 +108,15 @@ public class Inventory : MonoBehaviour, ISavable
 
         OnUpdated?.Invoke();
 
+    }
+
+    public bool HasItem(ItemBase item)
+    {
+        var currentCategory = (int)GetItemCategory(item);
+
+        var currentSlots = GetSlotByCategory(currentCategory);
+
+        return currentSlots.Exists(slots => slots.Item == item); 
     }
 
     public object CaptureState()
@@ -137,6 +147,7 @@ public class Inventory : MonoBehaviour, ISavable
 
         OnUpdated?.Invoke();
     }
+
 }
 
 [Serializable]

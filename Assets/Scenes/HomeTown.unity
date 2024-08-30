@@ -13392,6 +13392,124 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8b3a8770cc255946a1387932ffe318d, type: 3}
+--- !u!1001 &1972065275
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -7383976015270628491, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: uniqueId
+      value: cd764df9-fc31-41c1-96e7-d80f228a3039
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 484784017584928323, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1386267848570093737, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_Name
+      value: NPC_Quest
+      objectReference: {fileID: 0}
+    - target: {fileID: 1519196833684451984, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: item
+      value: 
+      objectReference: {fileID: 11400000, guid: f0680d7499dbc84419517b281174b198, type: 2}
+    - target: {fileID: 1519196833684451984, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1519196833684451984, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.data[0]
+      value: I just grabbed a lot of pokeballs in Town 1.
+      objectReference: {fileID: 0}
+    - target: {fileID: 1519196833684451984, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.data[1]
+      value: Let me give you some.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: questToStart
+      value: 
+      objectReference: {fileID: 11400000, guid: 8faab8350c4eca243b91a04c8037c7d2, type: 2}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: timeBetweenPattern
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.data[0]
+      value: Hi, have you tried walking through the tall grass?
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: dialog.lines.Array.data[1]
+      value: "You can find cool Pok\xE9mon in there!"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: movementPattern.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: movementPattern.Array.data[0].x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: movementPattern.Array.data[1].y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: movementPattern.Array.data[2].x
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: movementPattern.Array.data[3].y
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1519196833684451984, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
 --- !u!1001 &1691143979875631811
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13402,7 +13520,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4229383780411922092, guid: f2a9c8ce41df03f4d9af627534728b82, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.1
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4229383780411922092, guid: f2a9c8ce41df03f4d9af627534728b82, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13489,6 +13607,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pickup
       objectReference: {fileID: 0}
+    - target: {fileID: 1572754459211673754, guid: 38a91a26a2d84c445ab21b1236ad309e, type: 3}
+      propertyPath: item
+      value: 
+      objectReference: {fileID: 11400000, guid: 6d527e642b7692d4d8963b24fb28c0d9, type: 2}
     - target: {fileID: 8956564071625805175, guid: 38a91a26a2d84c445ab21b1236ad309e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.5
@@ -13607,6 +13729,10 @@ PrefabInstance:
       value: Let me give you some.
       objectReference: {fileID: 0}
     - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2443283708595025592, guid: 02b1a0c9beb7df842b31eb178a40b3aa, type: 3}
       propertyPath: timeBetweenPattern
       value: 2
       objectReference: {fileID: 0}
@@ -13653,6 +13779,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 987956121}
   - {fileID: 5909896709882227099}
+  - {fileID: 1972065275}
   - {fileID: 1691143979875631811}
   - {fileID: 2273742225886552311}
   - {fileID: 1688595739}

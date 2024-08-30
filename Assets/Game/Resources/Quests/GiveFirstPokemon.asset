@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d5338a788d76ba4f9520c8a503b0131, type: 3}
+  m_Name: GiveFirstPokemon
+  m_EditorClassIdentifier: 
+  name: GiveFirstPokemon
+  description: It gives the first pokemon to the player
+  startDialog:
+    lines: []
+  inProgresstDialog:
+    lines: []
+  completedDialog:
+    lines: []
+  requestItem: {fileID: 0}
+  rewardItem: {fileID: 0}
