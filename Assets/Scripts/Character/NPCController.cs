@@ -41,10 +41,11 @@ public class NPCController : MonoBehaviour, Interactable
             if (questToComplete != null)
             {
                 var quest = new Quest(questToComplete);
-                quest.CompleteQuest(initiator);
+                Debug.Log(quest);
+                yield return quest.CompleteQuest(initiator);
                 questToComplete = null;
 
-                Debug.Log($"{quest.Base.Name}completed");
+                Debug.Log($"{quest.Base.Name} completed");
             }
 
             if (itemGiver != null && itemGiver.CanGive())

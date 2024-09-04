@@ -20,11 +20,13 @@ public class Quest
         Status = QuestStatus.Started;
 
         yield return DialogManager.Instance.ShowDialog(Base.StartDialog);
+
+        QuestList.GetQuestList().AddQuest(this);
     }
 
     public IEnumerator CompleteQuest(Transform player)
-
     {
+
         Status = QuestStatus.Completed;
 
         yield return DialogManager.Instance.ShowDialog(Base.CompletedDialog);
@@ -39,14 +41,16 @@ public class Quest
         if (Base.RewardItem != null)
         {
             inventory.AddItem(Base.RewardItem);
-    	    var playerName = player.GetComponent<PlayerController>().Name;
+            var playerName = player.GetComponent<PlayerController>().Name;
             yield return DialogManager.Instance.ShowDialogText($"{playerName} received {Base.RewardItem.Name.ToUpper()}.", false, false);
             yield return new WaitForSeconds(1f);
             yield return DialogManager.Instance.ShowDialogText($"{playerName} put away the " + Base.RewardItem.Name.ToUpper() + $" in the {inventory.GetItemCategory(Base.RewardItem).ToString().ToUpper()} POCKET.");
         }
+        
+        QuestList.GetQuestList().AddQuest(this);
     }
 
-    public Boolean CanBeCompleted()
+    public bool CanBeCompleted()
     {
         var inventory = Inventory.GetInventory();
         if (Base.RequestItem != null)
