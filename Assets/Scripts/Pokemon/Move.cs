@@ -16,7 +16,7 @@ public class Move
 
     public Move(MoveSaveData saveData)
     {
-        Base = MovesDB.GetMoveByName(saveData.name);
+        Base = MovesDB.GetObjectByName(saveData.name);
         Pp = saveData.pp;
     }
 
@@ -24,7 +24,7 @@ public class Move
     {
         var saveData = new MoveSaveData
         {
-            name = Base.Name,
+            name = Base.name,
             pp = Pp
         };
 

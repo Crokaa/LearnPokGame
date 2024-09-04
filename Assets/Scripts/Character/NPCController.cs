@@ -41,7 +41,6 @@ public class NPCController : MonoBehaviour, Interactable
             if (questToComplete != null)
             {
                 var quest = new Quest(questToComplete);
-                Debug.Log(quest);
                 yield return quest.CompleteQuest(initiator);
                 questToComplete = null;
 
