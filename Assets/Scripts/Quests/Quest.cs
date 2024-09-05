@@ -62,6 +62,32 @@ public class Quest
         return true;
     }
 
+    public QuestSaveData GetQuestSaveData()
+    {
+
+        var saveData = new QuestSaveData
+        {
+            name = Base.name,
+            status = Status
+        };
+
+        return saveData;
+    }
+
+    public Quest(QuestSaveData questSaveData)
+    {
+        Base = QuestDB.GetObjectByName(questSaveData.name);
+        Status = questSaveData.status;
+    }
+
+}
+
+[System.Serializable]
+public class QuestSaveData
+{
+
+    public string name;
+    public QuestStatus status;
 }
 
 public enum QuestStatus { None, Started, Completed }

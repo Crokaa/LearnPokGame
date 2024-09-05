@@ -39,14 +39,10 @@ public class QuestObject : MonoBehaviour
             }
         }
 
-        Debug.Log("estou aqui amigo");
-
         if (onComplete != QuestObjectAction.DoNothing && questList.IsCompleted(questToCheck.Name))
         {
-            Debug.Log("fora do for amigo");
             foreach (Transform child in transform)
             {
-                Debug.Log("dentro do for amigo");
                 if (onComplete == QuestObjectAction.Enable)
                     child.gameObject.SetActive(true);
                 else if (onComplete == QuestObjectAction.Disable)
@@ -55,8 +51,6 @@ public class QuestObject : MonoBehaviour
         }
 
     }
-
-
 }
 
 public enum QuestObjectAction { DoNothing, Enable, Disable }

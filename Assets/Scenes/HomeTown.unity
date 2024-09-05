@@ -13464,6 +13464,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4441810438214042709, guid: c1946cdf04b0bc448a2cd59b82a56477, type: 3}
+      propertyPath: onComplete
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4441810438214042709, guid: c1946cdf04b0bc448a2cd59b82a56477, type: 3}
       propertyPath: questToCheck
       value: 
       objectReference: {fileID: 11400000, guid: 8faab8350c4eca243b91a04c8037c7d2, type: 2}
