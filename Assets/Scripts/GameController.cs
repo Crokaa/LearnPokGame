@@ -138,6 +138,8 @@ public class GameController : MonoBehaviour
         state = GameState.FreeRoam;
         battleSystem.gameObject.SetActive(false);
         worldCamera.gameObject.SetActive(true);
+
+        StartCoroutine(playerController.GetComponent<PokemonParty>().CheckForEvolution());
     }
 
     void MenuSelection(int selected)

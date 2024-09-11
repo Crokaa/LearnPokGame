@@ -52,4 +52,19 @@ public class PokemonParty : MonoBehaviour
             //TODO: Transfer to PC
         }
     }
+
+    public IEnumerator CheckForEvolution()
+    {
+        foreach (var pokemon in pokemons)
+        {
+            var evolution = pokemon.CheckForEvolution();
+            if (evolution != null)
+            {
+                yield return DialogManager.Instance.ShowDialogText($"{pokemon.Base.Name} has evolved into {evolution.EvolveInto.Name}.");
+                pokemon.Evolve();
+            }
+        }
+
+        OnUpdated?.Invoke();
+    }
 }

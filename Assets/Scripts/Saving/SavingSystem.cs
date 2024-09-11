@@ -60,6 +60,12 @@ public class SavingSystem : MonoBehaviour
         }
     }
 
+    public void SaveEntity(SavableEntity entity)
+    {
+        if(gameState.ContainsKey(entity.UniqueId))
+            entity.RestoreState(gameState[entity.UniqueId]);
+    }
+
     // Used to restore states of all savable objects in the game
     private void RestoreState(Dictionary<string, object> state)
     {

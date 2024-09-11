@@ -357,6 +357,19 @@ public class Pokemon
         HealHP(heal);
     }
 
+    public Evolution CheckForEvolution()
+    {
+        return Base.Evolutions.FirstOrDefault(e => e.RequiredLevel <= Level);
+    }
+
+    public void Evolve()
+    {
+        var oldMaxHp = MaxHp;
+        _base = CheckForEvolution().EvolveInto;
+        CalculateStats();
+        HP += MaxHp - oldMaxHp;
+    }
+
     public Pokemon(PokemonSaveData saveData)
     {
 

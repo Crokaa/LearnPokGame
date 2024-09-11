@@ -33,6 +33,7 @@ public class PokemonBase : ScriptableObject
     [SerializeField] List<MoveBase> learnByTm;
     [SerializeField] GrowthRate growthRate;
     [SerializeField] bool abilityOncePerBattleUsed;
+    [SerializeField] List<Evolution> evolutions;
 
     public static int MaxNumMoves { get; set; } = 4;
 
@@ -164,6 +165,22 @@ public class PokemonBase : ScriptableObject
     {
         get { return abilityOncePerBattleUsed; }
     }
+
+    public List<Evolution> Evolutions
+    {
+        get { return evolutions; }
+    }
+}
+
+[System.Serializable]
+public class Evolution
+{
+    [SerializeField] PokemonBase evolveInto;
+    [SerializeField] int requiredLevel;
+
+    public PokemonBase EvolveInto => evolveInto;
+    public int RequiredLevel => requiredLevel;
+
 }
 
 [System.Serializable]
