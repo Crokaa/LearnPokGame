@@ -362,10 +362,10 @@ public class Pokemon
         return Base.Evolutions.FirstOrDefault(e => e.RequiredLevel <= Level);
     }
 
-    public void Evolve()
+    public void Evolve(Evolution evolution)
     {
         var oldMaxHp = MaxHp;
-        _base = CheckForEvolution().EvolveInto;
+        _base = evolution.EvolveInto;
         CalculateStats();
         HP += MaxHp - oldMaxHp;
     }

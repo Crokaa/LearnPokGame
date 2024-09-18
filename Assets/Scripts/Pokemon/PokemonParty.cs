@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -60,8 +61,7 @@ public class PokemonParty : MonoBehaviour
             var evolution = pokemon.CheckForEvolution();
             if (evolution != null)
             {
-                yield return DialogManager.Instance.ShowDialogText($"{pokemon.Base.Name} has evolved into {evolution.EvolveInto.Name}.");
-                pokemon.Evolve();
+                yield return EvolutionManager.Instance.Evolve(pokemon, evolution);
             }
         }
 
